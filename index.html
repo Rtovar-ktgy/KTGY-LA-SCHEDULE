@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- saved from url=(0138)file:///C:/Users/rtovar/Documents/Project%20Management%20(Design%20Team)/00%20OVERALL%20SCHEDULE/KTGY%20LA%20DESIGN%20TEAM%20SCHEDULE.html -->
-<html lang="en" data-sync-id=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Studio Weekly Schedule</title>
@@ -127,6 +127,8 @@
     .split-btn{display:none !important;}
   }
 </style>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -154,10 +156,8 @@
     </div>
     <div class="tb-cell">
       <div class="tb-label">Shared Sync</div>
-      <div class="sync-row"><span class="sync-dot stale" id="syncDot"></span><span class="sync-text" id="syncText">checking…</span></div>
+      <div class="sync-row"><span class="sync-dot stale" id="syncDot"></span><span class="sync-text" id="syncText">connecting…</span></div>
       <button class="refresh-btn" id="refreshBtn">Refresh now</button>
-      <button class="refresh-btn" id="setupSyncBtn" style="display:none;">Set up shared sync</button>
-      <button class="refresh-btn" id="joinSyncBtn" style="display:none;">Connect to existing</button>
     </div>
   </div>
 
@@ -189,7 +189,7 @@
 
   <div class="panel" id="settingsPanel">
     <h3>Team Members and AWW Schedule</h3>
-    <label class="small">Each person's Alternative Work Week (AWW) day off is tracked individually. Set an anchor date (a Friday they had off); every other Friday from that date auto-marks their Friday cells off. Daily hour capacity is 9 hrs/day for AWW team members on their working days (8 hrs on their working Friday) and 8 hrs/day for everyone else. Once "Shared Sync" (top right) is set up, everyone who opens this same file sees and edits the same data, refreshed automatically every 15 seconds.</label>
+    <label class="small">Each person's Alternative Work Week (AWW) day off is tracked individually. Set an anchor date (a Friday they had off); every other Friday from that date auto-marks their Friday cells off. Daily hour capacity is 9 hrs/day for AWW team members on their working days (8 hrs on their working Friday) and 8 hrs/day for everyone else. This schedule is shared live: everyone who opens this same file sees the same data, and updates appear for everyone within a second or two.</label>
     <div id="memberListSettings" style="margin-top:8px;"><div class="member-settings-row"><div class="line1"><input type="text" value="Alyssa" data-edit-name="3wfz4cs1hj2c" placeholder="Name" style="flex:1;"><input type="text" value="Designer" placeholder="Role" data-edit-role="3wfz4cs1hj2c" style="flex:1;"></div><div class="line2"><label style="display:flex; align-items:center; gap:4px;"><input type="checkbox" checked="" data-edit-aww-enabled="3wfz4cs1hj2c"> On AWW schedule</label><label style="display:flex; align-items:center; gap:4px;">Anchor off-Friday: <input type="date" value="2026-01-02" data-edit-aww-anchor="3wfz4cs1hj2c"></label></div></div><div class="member-settings-row"><div class="line1"><input type="text" value="Ricardo" data-edit-name="ap3a3xomhj2c" placeholder="Name" style="flex:1;"><input type="text" value="Designer" placeholder="Role" data-edit-role="ap3a3xomhj2c" style="flex:1;"></div><div class="line2"><label style="display:flex; align-items:center; gap:4px;"><input type="checkbox" checked="" data-edit-aww-enabled="ap3a3xomhj2c"> On AWW schedule</label><label style="display:flex; align-items:center; gap:4px;">Anchor off-Friday: <input type="date" value="2026-01-09" data-edit-aww-anchor="ap3a3xomhj2c"></label></div></div><div class="member-settings-row"><div class="line1"><input type="text" value="Mark" data-edit-name="osyjmccsi92r" placeholder="Name" style="flex:1;"><input type="text" value="Principal" placeholder="Role" data-edit-role="osyjmccsi92r" style="flex:1;"></div><div class="line2"><label style="display:flex; align-items:center; gap:4px;"><input type="checkbox" data-edit-aww-enabled="osyjmccsi92r"> On AWW schedule</label><label style="display:flex; align-items:center; gap:4px;">Anchor off-Friday: <input type="date" value="2026-01-02" data-edit-aww-anchor="osyjmccsi92r"></label></div></div></div>
   </div>
 
@@ -273,23 +273,27 @@ function ensureRowFlagsOn(stateObj, mondayStr, rowId){
 
 // ---------- storage layer ----------
 // This file works as a plain, standalone .html file opened directly in a
-// browser (no server, no Claude session required). Two layers:
-//  1) localStorage — instant, always-available cache, scoped to this browser.
-//  2) jsonblob.com — a free, no-login JSON storage service. When "shared sync"
-//     is turned on, every teammate's browser reads/writes the SAME blob
-//     (identified by a sync ID baked into this file), so edits made on any
-//     computer show up for everyone else. No accounts, no API keys.
+// browser (no server session, no account needed to USE it). Two layers:
+//  1) localStorage — instant local cache so your own edits never disappear,
+//     even offline.
+//  2) Firebase Realtime Database — every teammate's browser reads/writes the
+//     SAME database, so edits made on any computer show up for everyone else
+//     automatically and instantly (no polling delay, no expiring data).
 const LOCAL_CACHE_KEY = 'ktgy-schedule-cache-v1';
-const LOCAL_SYNC_ID_KEY = 'ktgy-schedule-sync-id-v1';
-const JSONBLOB_BASE = 'https://jsonblob.com/api/jsonBlob';
 
-function getSyncId(){
-  return document.documentElement.dataset.syncId || localStorage.getItem(LOCAL_SYNC_ID_KEY) || '';
-}
-function setSyncId(id){
-  document.documentElement.dataset.syncId = id;
-  try{ localStorage.setItem(LOCAL_SYNC_ID_KEY, id); }catch(e){}
-}
+const firebaseConfig = {
+  apiKey: "AIzaSyAK7BosNnrG0bYlodFBY6IJASTifbge7p8",
+  authDomain: "ktgy-la-schedule.firebaseapp.com",
+  databaseURL: "https://ktgy-la-schedule-default-rtdb.firebaseio.com",
+  projectId: "ktgy-la-schedule",
+  storageBucket: "ktgy-la-schedule.firebasestorage.app",
+  messagingSenderId: "453910203055",
+  appId: "1:453910203055:web:87ae79fe1f008619b8a25a"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const scheduleRef = db.ref('schedule');
+
 function saveLocalCache(obj){
   try{ localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(obj)); }catch(e){}
 }
@@ -300,65 +304,35 @@ function loadLocalCache(){
   }catch(e){}
   return null;
 }
-async function cloudCreate(initialState){
-  const res = await fetch(JSONBLOB_BASE, {
-    method:'POST',
-    headers:{'Content-Type':'application/json', 'Accept':'application/json'},
-    body: JSON.stringify(initialState)
-  });
-  if(!res.ok) throw new Error('create failed');
-  const loc = res.headers.get('Location') || res.headers.get('location');
-  if(!loc) throw new Error('no blob id returned');
-  return loc.split('/').filter(Boolean).pop();
-}
-async function cloudGet(id){
-  const res = await fetch(`${JSONBLOB_BASE}/${id}`, {headers:{'Accept':'application/json'}});
-  if(!res.ok) throw new Error('get failed: '+res.status);
-  return await res.json();
-}
-async function cloudSet(id, obj){
-  const res = await fetch(`${JSONBLOB_BASE}/${id}`, {
-    method:'PUT',
-    headers:{'Content-Type':'application/json', 'Accept':'application/json'},
-    body: JSON.stringify(obj)
-  });
-  if(!res.ok) throw new Error('set failed: '+res.status);
-}
 
-// fetch latest (cloud if configured, else local), apply one change, write back
+// fetch latest from Firebase, apply one change, write back
 async function mutateState(mutatorFn){
   let latest = state;
-  const syncId = getSyncId();
-  if(syncId){
-    try{ latest = await cloudGet(syncId); }catch(e){ /* fall back to local state if fetch fails */ }
-  }
+  try{
+    const snap = await scheduleRef.get();
+    if(snap.exists()) latest = snap.val();
+  }catch(e){ /* fall back to local state if fetch fails */ }
   mutatorFn(latest);
   saveLocalCache(latest);
-  if(syncId){
-    try{
-      await cloudSet(syncId, latest);
-      lastSyncedAt = Date.now();
-      updateSyncIndicator(true);
-    }catch(e){ console.error('Cloud save failed', e); updateSyncIndicator(false); }
-  }
   state = latest;
+  try{
+    await scheduleRef.set(latest);
+  }catch(e){ console.error('Cloud save failed', e); }
 }
 
 async function pullLatest(){
-  const syncId = getSyncId();
-  if(!syncId){ updateSyncUI(); return; }
   try{
-    const incomingObj = await cloudGet(syncId);
-    const incoming = JSON.stringify(incomingObj);
-    const current = JSON.stringify(state);
-    if(incoming !== current){
-      state = incomingObj;
-      saveLocalCache(state);
-      renderAll();
+    const snap = await scheduleRef.get();
+    if(snap.exists()){
+      const incomingObj = snap.val();
+      if(JSON.stringify(incomingObj) !== JSON.stringify(state)){
+        state = incomingObj;
+        saveLocalCache(state);
+        renderAll();
+      }
+      updateSyncIndicator(true);
+      return;
     }
-    lastSyncedAt = Date.now();
-    updateSyncIndicator(true);
-    return;
   }catch(e){}
   updateSyncIndicator(false);
 }
@@ -373,85 +347,50 @@ function isEditingNow(){
 function updateSyncIndicator(ok){
   const dot = document.getElementById('syncDot');
   const text = document.getElementById('syncText');
-  if(!getSyncId()){
-    dot.classList.add('stale');
-    text.textContent = 'not shared yet — saving to this browser only';
-    return;
-  }
   if(ok){
     dot.classList.remove('stale');
-    text.textContent = 'synced just now';
+    text.textContent = 'synced live';
   } else {
     dot.classList.add('stale');
-    text.textContent = 'sync unavailable — check connection';
+    text.textContent = 'offline — showing last saved copy';
   }
 }
 
-function updateSyncUI(){
-  const syncId = getSyncId();
-  document.getElementById('setupSyncBtn').style.display = syncId ? 'none' : 'inline-block';
-  document.getElementById('joinSyncBtn').style.display = syncId ? 'none' : 'inline-block';
-  updateSyncIndicator(!!syncId);
-}
-
-async function enableSharedSync(){
-  const btn = document.getElementById('setupSyncBtn');
-  btn.disabled = true; btn.textContent = 'Setting up…';
-  try{
-    const id = await cloudCreate(state);
-    setSyncId(id);
-    updateSyncUI();
-    downloadConfiguredCopy();
-    alert('Shared sync is on! A new copy of this file just downloaded with the sync ID built in.\n\nReplace the file your team uses (e.g. on the shared/network drive) with this downloaded copy, and have everyone open THAT file from now on — their edits will then stay in sync automatically.');
-  }catch(e){
-    alert('Could not set up shared sync (network/CORS issue). You can try again, or continue using the file locally for now.');
-  }
-  btn.disabled = false; btn.textContent = 'Set up shared sync';
-}
-
-async function joinSharedSync(){
-  const id = prompt('Paste the shared sync ID a teammate gave you:');
-  if(!id) return;
-  try{
-    const remote = await cloudGet(id.trim());
-    setSyncId(id.trim());
-    state = remote;
+// Live updates: Firebase pushes changes instantly, no need to poll on a timer.
+scheduleRef.on('value', (snap) => {
+  if(!snap.exists()) return;
+  const incomingObj = snap.val();
+  if(isEditingNow()) return; // don't yank the field out from under an active edit
+  if(JSON.stringify(incomingObj) !== JSON.stringify(state)){
+    state = incomingObj;
     saveLocalCache(state);
     renderAll();
-    updateSyncUI();
-    downloadConfiguredCopy();
-    alert('Connected! A copy of this file with the sync ID built in just downloaded — use that copy going forward.');
-  }catch(e){
-    alert('Could not find that sync ID. Double-check it and try again.');
   }
-}
-
-function downloadConfiguredCopy(){
-  const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-  const blob = new Blob([html], {type:'text/html'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'KTGY LA DESIGN TEAM SCHEDULE.html';
-  document.body.appendChild(a); a.click(); a.remove();
-  URL.revokeObjectURL(url);
-}
+  updateSyncIndicator(true);
+});
+// Firebase's own connection-state channel — reflects real socket status.
+db.ref('.info/connected').on('value', (snap) => {
+  updateSyncIndicator(snap.val() === true);
+});
 
 async function load(){
   const cached = loadLocalCache();
   if(cached) state = cached;
-  const syncId = getSyncId();
-  if(syncId){
-    try{
-      state = await cloudGet(syncId);
+  try{
+    const snap = await scheduleRef.get();
+    if(snap.exists()){
+      state = snap.val();
       saveLocalCache(state);
-      lastSyncedAt = Date.now();
       return;
-    }catch(e){ /* fall back to cache/default below */ }
-  }
+    }
+  }catch(e){ /* fall back to cache/default below */ }
   if(!state){
     state = defaultState();
-    saveLocalCache(state);
   }
+  // Nothing in the database yet (first-ever run) — seed it so everyone starts
+  // from the same data.
+  try{ await scheduleRef.set(state); }catch(e){}
+  saveLocalCache(state);
 }
 function migrateFromV2(old){
   const weeks = {};
@@ -803,8 +742,6 @@ document.getElementById('projectHoursBtn').addEventListener('click', ()=>{
 });
 document.getElementById('printBtn').addEventListener('click', ()=> window.print());
 document.getElementById('refreshBtn').addEventListener('click', ()=> pullLatest());
-document.getElementById('setupSyncBtn').addEventListener('click', ()=> enableSharedSync());
-document.getElementById('joinSyncBtn').addEventListener('click', ()=> joinSharedSync());
 document.getElementById('addMemberBtn').addEventListener('click', async ()=>{
   const name = prompt('Team member name:');
   if(!name) return;
@@ -818,7 +755,6 @@ setInterval(()=>{ if(!isEditingNow()) pullLatest(); }, POLL_MS);
 (async function init(){
   await load();
   renderAll();
-  updateSyncUI();
 })();
 </script>
 
