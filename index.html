@@ -4,188 +4,676 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KTGY LA Studio — Weekly Schedule</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+
 <style>
-  :root{
-    --paper:#ECE8DE; --paper-line:#D8D2C2; --ink:#20262B; --ink-soft:#565F66;
-    --redline:#C4401D; --off-hatch-a:#DCD6C8; --off-hatch-b:#CBC4B2;
-    --pto-hatch-a:#E6D6D6; --pto-hatch-b:#D6BEBE;
-    --card:#F7F5EF; --border:#B9B2A0; --row-alt:#F1EEE5; --ok:#4B8A5E; --warn:#B8862B;
+  :root {
+    --paper:#ECE8DE;
+    --paper-line:#D8D2C2;
+    --ink:#20262B;
+    --ink-soft:#565F66;
+    --redline:#C4401D;
+    --off-hatch-a:#DCD6C8;
+    --off-hatch-b:#CBC4B2;
+    --pto-hatch-a:#E6D6D6;
+    --pto-hatch-b:#D6BEBE;
+    --card:#F7F5EF;
+    --border:#B9B2A0;
+    --row-alt:#F1EEE5;
+    --ok:#4B8A5E;
+    --warn:#B8862B;
   }
-  *{box-sizing:border-box;}
-  body{
-    margin:0; background:var(--paper);
-    background-image:linear-gradient(var(--paper-line) 1px, transparent 1px), linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
-    background-size:28px 28px; color:var(--ink); font-family:'Inter',sans-serif; min-height:100vh; padding:24px;
+
+  * { box-sizing:border-box; }
+  [hidden] { display:none !important; }
+
+  body {
+    margin:0;
+    padding:24px;
+    min-height:100vh;
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--paper-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+    background-size:28px 28px;
   }
-  .sheet{ max-width:1700px; margin:0 auto; background:var(--card); border:1px solid var(--border);
-    box-shadow:0 2px 0 rgba(32,38,43,0.08), 0 12px 30px rgba(32,38,43,0.10); }
-  .titleblock{ display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; border-bottom:2px solid var(--ink); }
-  .tb-cell{ padding:14px 18px; border-right:1px solid var(--border); }
-  .tb-cell:last-child{border-right:none;}
-  .tb-label{ font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:4px; }
-  .studio-name{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:22px; letter-spacing:-0.01em; background:transparent; border:none; color:var(--ink); width:100%; padding:0; }
-  .studio-name:focus{outline:none; border-bottom:1px dashed var(--ink-soft);}
-  .sheet-title{ font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--redline); margin-top:2px; }
-  .week-nav{display:flex; align-items:center; gap:8px;}
-  .week-nav button{ font-family:'IBM Plex Mono',monospace; background:none; border:1px solid var(--border); color:var(--ink); width:26px;height:26px; cursor:pointer; font-size:14px; line-height:1; }
-  .week-nav button:hover{background:var(--paper);}
-  .week-range{ font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:500; }
-  .week-input{ font-family:'IBM Plex Mono',monospace; font-size:12px; border:1px solid var(--border); background:var(--paper); padding:3px 4px; }
-  .sync-row{ display:flex; align-items:center; gap:6px; }
-  .sync-dot{ width:7px;height:7px;border-radius:50%; background:var(--ok); flex-shrink:0; }
-  .sync-dot.stale{ background:var(--warn); }
-  .sync-text{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink-soft); }
-  .refresh-btn{ font-family:'IBM Plex Mono',monospace; font-size:10px; background:none; border:1px solid var(--border); color:var(--ink-soft); padding:2px 6px; cursor:pointer; margin-top:6px; }
-  .refresh-btn:hover{ border-color:var(--ink); color:var(--ink); }
-  .dept-filter{ font-family:'IBM Plex Mono',monospace; font-size:11px; border:1px solid var(--border); background:var(--paper); padding:3px 6px; margin-top:6px; }
 
-  .legend{ display:flex; flex-wrap:wrap; gap:10px; padding:10px 18px; border-bottom:1px solid var(--border); font-size:11px; align-items:center; }
-  .legend-label{ font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-soft); margin-right:2px; }
-  .chip{ display:inline-flex; align-items:center; gap:5px; padding:2px 8px; border-radius:2px; font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600; color:#fff; }
-  .chip .swatch{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.8);}
-  .cap-key{ display:flex; gap:8px; align-items:center; font-size:10.5px; color:var(--ink-soft); }
-  .cap-dot{ width:8px;height:8px;border-radius:50%; display:inline-block; margin-right:3px; }
-  .aww-note-legend{ font-size:10.5px; color:var(--ink-soft); font-style:italic; }
+  button, input, select { font:inherit; }
+  button:disabled { opacity:.55; cursor:not-allowed; }
 
-  .grid-wrap{overflow-x:auto;}
-  table.schedule{ width:100%; border-collapse:collapse; min-width:1550px; }
-  table.schedule.two-week{ min-width:2650px; }
-  table.schedule th, table.schedule td{ border:1px solid var(--border); vertical-align:middle; }
-  table.schedule thead th{ background:var(--ink); color:var(--card); font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; padding:8px 8px; text-align:left; position:sticky; top:0; white-space:nowrap; }
-  td.designer-cell{ width:118px; padding:8px; background:#DCE4E8; font-weight:700; font-size:13px; text-align:center; }
-  td.designer-cell .rm{ display:block; margin:0 auto 4px; cursor:pointer; color:var(--ink-soft); font-size:10px; border:none;background:none; }
-  td.designer-cell .rm:hover{color:var(--redline);}
-  td.designer-cell .role{ display:block; font-weight:400; font-size:10px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace; margin-top:3px; }
-  .dept-badge{ display:inline-block; margin-top:5px; font-family:'IBM Plex Mono',monospace; font-size:8.5px; text-transform:uppercase; letter-spacing:.04em; padding:1px 6px; border-radius:2px; color:#fff; }
-  .dept-badge.design{ background:#2C5F7C; }
-  .dept-badge.technical{ background:#7A4B8A; }
+  .sheet {
+    max-width:1700px;
+    margin:0 auto;
+    background:var(--card);
+    border:1px solid var(--border);
+    box-shadow:
+      0 2px 0 rgba(32,38,43,.08),
+      0 12px 30px rgba(32,38,43,.10);
+  }
 
-  td.field-cell{ padding:0; background:var(--card); }
-  tr.alt td.field-cell{ background:var(--row-alt); }
-  td.field-cell input, td.field-cell select{ width:100%; height:100%; border:none; background:transparent; padding:6px 6px; font-family:'Inter',sans-serif; font-size:12px; color:var(--ink); }
-  td.field-cell input:focus, td.field-cell select:focus{ outline:2px solid var(--ink); outline-offset:-2px; background:#fff; }
-  td.field-cell.narrow{ width:88px; }
-  td.field-cell.wide{ width:140px; }
-  td.field-cell.status-wide{ width:230px; }
-  select.stage-select{ font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:11px; -webkit-appearance:none; -moz-appearance:none; appearance:none; }
-  .proj-num-wrap{ display:flex; align-items:center; gap:2px; padding-left:2px; }
-  .rm-row{ border:none; background:none; color:var(--ink-soft); cursor:pointer; font-size:11px; flex-shrink:0; padding:0 2px; }
-  .rm-row:hover{ color:var(--redline); }
+  .auth-panel { margin-bottom:16px; }
+  .auth-content {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
+    padding:16px 18px;
+  }
+  .auth-title {
+    margin:0 0 5px;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:19px;
+  }
+  .auth-message {
+    margin:0;
+    font-size:12px;
+    color:var(--ink-soft);
+    overflow-wrap:anywhere;
+  }
+  .auth-actions { display:flex; gap:8px; flex-wrap:wrap; }
 
-  td.day-cell{ width:78px; padding:4px; background:var(--card); vertical-align:top; }
-  tr.alt td.day-cell{ background:var(--row-alt); }
-  td.day-cell.is-off{ background-image:repeating-linear-gradient(135deg, var(--off-hatch-a), var(--off-hatch-a) 6px, var(--off-hatch-b) 6px, var(--off-hatch-b) 7px); }
-  td.day-cell.is-pto{ background-image:repeating-linear-gradient(135deg, var(--pto-hatch-a), var(--pto-hatch-a) 6px, var(--pto-hatch-b) 6px, var(--pto-hatch-b) 7px); }
-  .hrs-input{ width:100%; border:1px solid var(--border); background:#fff; text-align:center; font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:13px; padding:3px 2px; color:var(--ink); }
-  td.day-cell.is-off .hrs-input{ color:var(--redline); border-color:var(--redline); background:rgba(255,255,255,.55); }
-  td.day-cell.is-pto .hrs-input{ color:#8A3E3E; border-color:#8A3E3E; background:rgba(255,255,255,.55); }
-  .hrs-input:focus{ outline:2px solid var(--ink); outline-offset:-1px; }
-  .note-input{ width:100%; border:none; background:transparent; text-align:center; margin-top:3px; font-family:'Inter',sans-serif; font-style:italic; font-size:9.5px; color:var(--ink-soft); padding:1px; }
-  .note-input:focus{ outline:1px dashed var(--ink-soft); background:#fff; }
-  .note-input::placeholder{ color:#B0A996; }
+  .titleblock {
+    display:grid;
+    grid-template-columns:1.4fr 1fr 1fr 1fr;
+    border-bottom:2px solid var(--ink);
+  }
+  .tb-cell { padding:14px 18px; border-right:1px solid var(--border); }
+  .tb-cell:last-child { border-right:none; }
+  .tb-label {
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:4px;
+  }
+  .studio-name {
+    width:100%;
+    padding:0;
+    border:none;
+    background:transparent;
+    color:var(--ink);
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:22px;
+    letter-spacing:-.01em;
+  }
+  .studio-name:focus {
+    outline:none;
+    border-bottom:1px dashed var(--ink-soft);
+  }
+  .sheet-title {
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--redline);
+    margin-top:2px;
+  }
+  .week-nav { display:flex; align-items:center; gap:8px; }
+  .week-nav button {
+    width:26px;
+    height:26px;
+    border:1px solid var(--border);
+    background:none;
+    color:var(--ink);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:14px;
+    line-height:1;
+    cursor:pointer;
+  }
+  .week-nav button:hover { background:var(--paper); }
+  .week-range {
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    font-weight:500;
+  }
+  .week-input {
+    margin-top:6px;
+    border:1px solid var(--border);
+    background:var(--paper);
+    padding:3px 4px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+  }
+  .sync-row { display:flex; align-items:center; gap:6px; }
+  .sync-dot {
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:var(--ok);
+    flex-shrink:0;
+  }
+  .sync-dot.stale { background:var(--warn); }
+  .sync-text {
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    color:var(--ink-soft);
+  }
+  .refresh-btn {
+    margin-top:6px;
+    padding:2px 6px;
+    border:1px solid var(--border);
+    background:none;
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    cursor:pointer;
+  }
+  .refresh-btn:hover { border-color:var(--ink); color:var(--ink); }
+  .dept-filter {
+    margin-top:6px;
+    padding:3px 6px;
+    border:1px solid var(--border);
+    background:var(--paper);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+  }
 
-  tr.pto-row td{ background:#F1E4E4; padding:5px 6px; }
-  tr.pto-row td.designer-cell{ background:#DCE4E8; }
-  tr.pto-row td.field-cell{ background:#F1E4E4; text-align:right; padding:5px 8px; }
-  tr.pto-row .pto-cell{ display:flex; flex-direction:column; align-items:center; gap:2px; }
-  tr.pto-row .pto-cell label{ font-family:'IBM Plex Mono',monospace; font-size:9px; color:#8A3E3E; text-transform:uppercase; }
+  .legend {
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:10px;
+    padding:10px 18px;
+    border-bottom:1px solid var(--border);
+    font-size:11px;
+  }
+  .legend-label {
+    font-family:'IBM Plex Mono',monospace;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    color:var(--ink-soft);
+    margin-right:2px;
+  }
+  .chip {
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    padding:2px 8px;
+    border-radius:2px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    font-weight:600;
+    color:#fff;
+  }
+  .chip .swatch {
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:rgba(255,255,255,.8);
+  }
+  .cap-key {
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    align-items:center;
+    font-size:10.5px;
+    color:var(--ink-soft);
+  }
+  .cap-dot {
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    display:inline-block;
+    margin-right:3px;
+  }
+  .aww-note-legend {
+    font-size:10.5px;
+    color:var(--ink-soft);
+    font-style:italic;
+  }
 
-  tr.totals-row td{ background:#EFE9DC; padding:5px 6px; }
-  tr.totals-row td.designer-cell{ background:#DCE4E8; }
-  tr.totals-row td.field-cell{ background:#EFE9DC; text-align:right; padding:5px 8px; }
-  .totals-label{ font-family:'IBM Plex Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); }
-  .totals-cell{ display:flex; flex-direction:column; align-items:center; gap:2px; }
-  .totals-hrs{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:12px; padding:2px 6px; border-radius:2px; color:#fff; }
-  .totals-hrs.match{ background:var(--ok); }
-  .totals-hrs.under{ background:var(--warn); }
-  .totals-hrs.over{ background:var(--redline); }
-  .totals-hrs.neutral{ background:#8b8272; }
-  .split-btn{ font-family:'IBM Plex Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.04em; background:none; border:1px solid var(--border); color:var(--ink-soft); padding:1px 5px; cursor:pointer; }
-  .split-btn:hover{ border-color:var(--ink); color:var(--ink); }
+  .grid-wrap { overflow-x:auto; }
+  table.schedule {
+    width:100%;
+    border-collapse:collapse;
+    min-width:1550px;
+  }
+  table.schedule.two-week { min-width:2650px; }
+  table.schedule th, table.schedule td {
+    border:1px solid var(--border);
+    vertical-align:middle;
+  }
+  table.schedule thead th {
+    background:var(--ink);
+    color:var(--card);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    padding:8px;
+    text-align:left;
+    position:sticky;
+    top:0;
+    white-space:nowrap;
+  }
+  td.designer-cell {
+    width:118px;
+    padding:8px;
+    background:#DCE4E8;
+    font-weight:700;
+    font-size:13px;
+    text-align:center;
+  }
+  td.designer-cell .rm {
+    display:block;
+    margin:0 auto 4px;
+    border:none;
+    background:none;
+    color:var(--ink-soft);
+    font-size:10px;
+    cursor:pointer;
+  }
+  td.designer-cell .rm:hover { color:var(--redline); }
+  td.designer-cell .role {
+    display:block;
+    margin-top:3px;
+    font-weight:400;
+    font-size:10px;
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .dept-badge {
+    display:inline-block;
+    margin-top:5px;
+    padding:1px 6px;
+    border-radius:2px;
+    color:#fff;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:8.5px;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+  }
+  .dept-badge.design { background:#2C5F7C; }
+  .dept-badge.technical { background:#7A4B8A; }
 
-  tr.add-row td{ padding:5px 8px; background:var(--paper); border-top:none; }
-  tr.add-row button{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; background:none; border:1px dashed var(--border); color:var(--ink-soft); padding:3px 9px; cursor:pointer; }
-  tr.add-row button:hover{ border-color:var(--ink); color:var(--ink); }
+  td.field-cell { padding:0; background:var(--card); }
+  tr.alt td.field-cell { background:var(--row-alt); }
+  td.field-cell input, td.field-cell select {
+    width:100%;
+    height:100%;
+    border:none;
+    background:transparent;
+    padding:6px;
+    font-family:'Inter',sans-serif;
+    font-size:12px;
+    color:var(--ink);
+  }
+  td.field-cell input:focus, td.field-cell select:focus {
+    outline:2px solid var(--ink);
+    outline-offset:-2px;
+    background:#fff;
+  }
+  td.field-cell.narrow { width:88px; }
+  td.field-cell.wide { width:140px; }
+  td.field-cell.status-wide { width:230px; }
+  td.field-cell input.mono {
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+  }
+  select.stage-select {
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    font-size:11px;
+    appearance:none;
+  }
+  .proj-num-wrap {
+    display:flex;
+    align-items:center;
+    gap:2px;
+    padding-left:2px;
+  }
+  .proj-num-wrap input { flex:1; min-width:0; }
+  .rm-row {
+    border:none;
+    background:none;
+    color:var(--ink-soft);
+    cursor:pointer;
+    font-size:11px;
+    flex-shrink:0;
+    padding:0 2px;
+  }
+  .rm-row:hover { color:var(--redline); }
 
-  .toolbar{ display:flex; justify-content:space-between; align-items:center; padding:12px 18px; flex-wrap:wrap; gap:10px; }
-  .toolbar .group{display:flex; gap:8px; flex-wrap:wrap;}
-  .btn{ font-family:'Inter',sans-serif; font-size:12px; padding:5px 10px; border:1px solid var(--border); background:var(--card); cursor:pointer; color:var(--ink); }
-  .btn:hover{border-color:var(--ink-soft);}
-  .btn.primary{background:var(--ink); color:var(--card); border-color:var(--ink);}
-  .btn.primary:hover{background:#3a444c;}
-  .btn.danger{color:var(--redline); border-color:var(--redline);}
-  .btn.small{padding:3px 7px; font-size:11px;}
-  .btn.active{background:var(--ink); color:var(--card); border-color:var(--ink);}
+  td.day-cell {
+    width:78px;
+    padding:4px;
+    background:var(--card);
+    vertical-align:top;
+  }
+  tr.alt td.day-cell { background:var(--row-alt); }
+  td.day-cell.is-off {
+    background-image:repeating-linear-gradient(
+      135deg,
+      var(--off-hatch-a),
+      var(--off-hatch-a) 6px,
+      var(--off-hatch-b) 6px,
+      var(--off-hatch-b) 7px
+    );
+  }
+  td.day-cell.is-pto {
+    background-image:repeating-linear-gradient(
+      135deg,
+      var(--pto-hatch-a),
+      var(--pto-hatch-a) 6px,
+      var(--pto-hatch-b) 6px,
+      var(--pto-hatch-b) 7px
+    );
+  }
+  .hrs-input {
+    width:100%;
+    border:1px solid var(--border);
+    background:#fff;
+    text-align:center;
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:700;
+    font-size:13px;
+    padding:3px 2px;
+    color:var(--ink);
+  }
+  td.day-cell.is-off .hrs-input {
+    color:var(--redline);
+    border-color:var(--redline);
+    background:rgba(255,255,255,.55);
+  }
+  td.day-cell.is-pto .hrs-input {
+    color:#8A3E3E;
+    border-color:#8A3E3E;
+    background:rgba(255,255,255,.55);
+  }
+  .hrs-input:focus { outline:2px solid var(--ink); outline-offset:-1px; }
+  .note-input {
+    width:100%;
+    border:none;
+    background:transparent;
+    text-align:center;
+    margin-top:3px;
+    font-family:'Inter',sans-serif;
+    font-style:italic;
+    font-size:9.5px;
+    color:var(--ink-soft);
+    padding:1px;
+  }
+  .note-input:focus { outline:1px dashed var(--ink-soft); background:#fff; }
+  .note-input::placeholder { color:#B0A996; }
 
-  .panel{ border-top:2px solid var(--ink); padding:16px 18px 20px; display:none; }
-  .panel.open{display:block;}
-  .panel h3{ font-family:'Space Grotesk',sans-serif; font-size:14px; margin:0 0 10px; text-transform:uppercase; letter-spacing:.04em; }
-  label.small{font-size:11px; color:var(--ink-soft); display:block; margin-top:4px;}
-  .member-settings-row{display:flex; flex-direction:column; gap:6px; padding:8px 0; border-bottom:1px solid var(--paper-line); max-width:760px;}
-  .member-settings-row .line1{display:flex; gap:6px;}
-  .member-settings-row .line2{display:flex; gap:14px; align-items:center; font-size:11.5px; color:var(--ink-soft); flex-wrap:wrap;}
-  .member-settings-row input[type=text]{border:1px solid var(--border); padding:4px 6px; font-family:'Inter',sans-serif; font-size:12.5px;}
-  .member-settings-row select{border:1px solid var(--border); padding:4px 6px; font-family:'Inter',sans-serif; font-size:12.5px;}
+  tr.pto-row td { background:#F1E4E4; padding:5px 6px; }
+  tr.pto-row td.field-cell { text-align:right; padding:5px 8px; }
+  .pto-cell { display:flex; flex-direction:column; align-items:center; gap:2px; }
+  .pto-cell label {
+    font-family:'IBM Plex Mono',monospace;
+    font-size:9px;
+    color:#8A3E3E;
+    text-transform:uppercase;
+  }
+  tr.totals-row td { background:#EFE9DC; padding:5px 6px; }
+  tr.totals-row td.field-cell { text-align:right; padding:5px 8px; }
+  .totals-label {
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--ink-soft);
+  }
+  .totals-cell {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
+  }
+  .totals-hrs {
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:700;
+    font-size:12px;
+    padding:2px 6px;
+    border-radius:2px;
+    color:#fff;
+  }
+  .totals-hrs.match { background:var(--ok); }
+  .totals-hrs.under { background:var(--warn); }
+  .totals-hrs.over { background:var(--redline); }
+  .totals-hrs.neutral { background:#8b8272; }
+  .split-btn {
+    font-family:'IBM Plex Mono',monospace;
+    font-size:9px;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    background:none;
+    border:1px solid var(--border);
+    color:var(--ink-soft);
+    padding:1px 5px;
+    cursor:pointer;
+  }
+  .split-btn:hover { border-color:var(--ink); color:var(--ink); }
+  tr.add-row td { padding:5px 8px; background:var(--paper); border-top:none; }
+  tr.add-row button {
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    background:none;
+    border:1px dashed var(--border);
+    color:var(--ink-soft);
+    padding:3px 9px;
+    cursor:pointer;
+  }
+  tr.add-row button:hover { border-color:var(--ink); color:var(--ink); }
 
-  table.phrs{ width:100%; border-collapse:collapse; max-width:960px; }
-  table.phrs th, table.phrs td{ border:1px solid var(--border); padding:6px 8px; font-size:12px; text-align:left; }
-  table.phrs th{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; background:var(--paper); color:var(--ink-soft); }
-  table.phrs td.num{ font-family:'IBM Plex Mono',monospace; font-weight:700; text-align:right; }
-  table.phrs tr:nth-child(even) td{ background:var(--row-alt); }
-  table.phrs tr.grand-total td{ background:var(--ink); color:var(--card); font-weight:700; }
-  table.phrs tr.grand-total td.num{ color:var(--card); }
-  .phrs-empty{ color:var(--ink-soft); font-size:12px; padding:10px 0; }
+  .toolbar {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 18px;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .toolbar .group { display:flex; gap:8px; flex-wrap:wrap; }
+  .btn {
+    font-family:'Inter',sans-serif;
+    font-size:12px;
+    padding:5px 10px;
+    border:1px solid var(--border);
+    background:var(--card);
+    cursor:pointer;
+    color:var(--ink);
+  }
+  .btn:hover { border-color:var(--ink-soft); }
+  .btn.primary, .btn.active {
+    background:var(--ink);
+    color:var(--card);
+    border-color:var(--ink);
+  }
+  .btn.primary:hover { background:#3a444c; }
 
-  .workload-block{ margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--paper-line); max-width:760px; }
-  .workload-name{ font-weight:700; font-size:13px; }
-  .workload-name .dept-badge{ margin-left:6px; margin-top:0; vertical-align:middle; }
-  .workload-list{ margin:6px 0 0; padding-left:18px; font-size:12px; }
-  .workload-list li{ margin-bottom:3px; }
-  .workload-count{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink-soft); }
+  .panel {
+    border-top:2px solid var(--ink);
+    padding:16px 18px 20px;
+    display:none;
+  }
+  .panel.open { display:block; }
+  .panel h3 {
+    font-family:'Space Grotesk',sans-serif;
+    font-size:14px;
+    margin:0 0 10px;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+  }
+  label.small {
+    font-size:11px;
+    color:var(--ink-soft);
+    display:block;
+    margin-top:4px;
+  }
+  .member-settings-row {
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    padding:8px 0;
+    border-bottom:1px solid var(--paper-line);
+    max-width:760px;
+  }
+  .member-settings-row .line1 { display:flex; gap:6px; flex-wrap:wrap; }
+  .member-settings-row .line2 {
+    display:flex;
+    gap:14px;
+    align-items:center;
+    font-size:11.5px;
+    color:var(--ink-soft);
+    flex-wrap:wrap;
+  }
+  .member-settings-row input[type=text],
+  .member-settings-row select {
+    border:1px solid var(--border);
+    padding:4px 6px;
+    font-family:'Inter',sans-serif;
+    font-size:12.5px;
+  }
+  .member-settings-row input[type=text] { flex:1; min-width:140px; }
+  .inline-label { display:flex; align-items:center; gap:4px; }
 
-  @media print{
-    body{background:#fff; padding:0;}
-    .sheet{border:none; box-shadow:none;}
-    .toolbar, .panel{display:none !important;}
-    .week-nav button, .refresh-btn{display:none;}
-    tr.add-row{display:none !important;}
-    .split-btn, .rm-row{display:none !important;}
+  table.phrs {
+    width:100%;
+    border-collapse:collapse;
+    max-width:960px;
+  }
+  table.phrs th, table.phrs td {
+    border:1px solid var(--border);
+    padding:6px 8px;
+    font-size:12px;
+    text-align:left;
+  }
+  table.phrs th {
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    background:var(--paper);
+    color:var(--ink-soft);
+  }
+  table.phrs td.num {
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:700;
+    text-align:right;
+  }
+  table.phrs tr:nth-child(even) td { background:var(--row-alt); }
+  table.phrs tr.grand-total td {
+    background:var(--ink);
+    color:var(--card);
+    font-weight:700;
+  }
+  .phrs-empty { color:var(--ink-soft); font-size:12px; padding:10px 0; }
+  .workload-block {
+    margin-bottom:14px;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--paper-line);
+    max-width:760px;
+  }
+  .workload-name { font-weight:700; font-size:13px; }
+  .workload-name .dept-badge {
+    margin-left:6px;
+    margin-top:0;
+    vertical-align:middle;
+  }
+  .workload-list { margin:6px 0 0; padding-left:18px; font-size:12px; }
+  .workload-list li { margin-bottom:3px; }
+  .workload-count {
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    color:var(--ink-soft);
+  }
+
+  @media (max-width:800px) {
+    body { padding:12px; }
+    .titleblock { grid-template-columns:1fr 1fr; }
+    .tb-cell { border-bottom:1px solid var(--border); }
+  }
+
+  @media print {
+    body { background:#fff; padding:0; }
+    .sheet { border:none; box-shadow:none; }
+    #authPanel, .toolbar, .panel { display:none !important; }
+    .week-nav button, .refresh-btn, .dept-filter { display:none; }
+    tr.add-row { display:none !important; }
+    .split-btn, .rm-row, .rm { display:none !important; }
+    .grid-wrap { overflow:visible; }
   }
 </style>
 </head>
+
 <body>
 
-<div class="sheet">
+<section class="sheet auth-panel" id="authPanel">
+  <div class="auth-content">
+    <div>
+      <h1 class="auth-title">KTGY LA Studio Schedule</h1>
+      <p class="auth-message" id="authMessage" role="status" aria-live="polite">
+        Starting authentication…
+      </p>
+    </div>
+
+    <div class="auth-actions">
+      <button class="btn primary" id="signInBtn" type="button" hidden>
+        Sign in with Microsoft
+      </button>
+      <button class="btn" id="retryBtn" type="button" hidden>
+        Retry loading
+      </button>
+      <button class="btn" id="signOutBtn" type="button" hidden>
+        Sign out
+      </button>
+    </div>
+  </div>
+</section>
+
+<noscript>
+  <p>This application requires JavaScript and company Microsoft sign-in.</p>
+</noscript>
+
+<div class="sheet" id="scheduleApp" hidden>
   <div class="titleblock">
     <div class="tb-cell">
       <div class="tb-label">Studio</div>
-      <input class="studio-name" id="studioName" value="KTGY LA Studio">
+      <input class="studio-name" id="studioName" value="" maxlength="150"
+             aria-label="Studio name">
       <div class="sheet-title">Weekly Studio Schedule</div>
     </div>
+
     <div class="tb-cell">
       <div class="tb-label">Week Of</div>
       <div class="week-nav">
-        <button id="prevWeek">‹</button>
+        <button id="prevWeek" type="button" aria-label="Previous week">‹</button>
         <span class="week-range" id="weekRange">—</span>
-        <button id="nextWeek">›</button>
+        <button id="nextWeek" type="button" aria-label="Next week">›</button>
       </div>
-      <input type="date" class="week-input" id="weekPicker" style="margin-top:6px;">
+      <input type="date" class="week-input" id="weekPicker"
+             aria-label="Choose week">
     </div>
+
     <div class="tb-cell">
       <div class="tb-label">Team Size</div>
       <div class="week-range" id="teamSize">0</div>
-      <select class="dept-filter" id="deptFilter">
+      <select class="dept-filter" id="deptFilter" aria-label="Department">
         <option value="all">All Departments</option>
         <option value="Design">Design Team</option>
         <option value="Technical">Technical Team</option>
       </select>
     </div>
+
     <div class="tb-cell">
       <div class="tb-label">Shared Sync</div>
-      <div class="sync-row"><span class="sync-dot" id="syncDot"></span><span class="sync-text" id="syncText">connecting…</span></div>
-      <button class="refresh-btn" id="refreshBtn">Refresh now</button>
+      <div class="sync-row">
+        <span class="sync-dot stale" id="syncDot"></span>
+        <span class="sync-text" id="syncText" role="status">Not connected</span>
+      </div>
+      <button class="refresh-btn" id="refreshBtn" type="button">
+        Refresh now
+      </button>
     </div>
   </div>
 
@@ -193,179 +681,72 @@
 
   <div class="grid-wrap">
     <table class="schedule" id="scheduleTable">
-      <thead>
-        <tr id="scheduleHeadRow"></tr>
-      </thead>
+      <thead><tr id="scheduleHeadRow"></tr></thead>
       <tbody id="scheduleBody"></tbody>
     </table>
   </div>
 
   <div class="toolbar">
     <div class="group">
-      <button class="btn" id="addMemberBtn">+ Add team member</button>
-      <button class="btn" id="oneWeekBtn">1 Week</button>
-      <button class="btn" id="twoWeekBtn">2 Weeks</button>
-      <button class="btn" id="printBtn">Print / Export</button>
+      <button class="btn" id="addMemberBtn" type="button">+ Add team member</button>
+      <button class="btn" id="oneWeekBtn" type="button">1 Week</button>
+      <button class="btn" id="twoWeekBtn" type="button">2 Weeks</button>
+      <button class="btn" id="printBtn" type="button">Print / Export</button>
     </div>
     <div class="group">
-      <button class="btn" id="workloadBtn">Team Workload</button>
-      <button class="btn" id="projectHoursBtn">Project Hours</button>
-      <button class="btn" id="settingsBtn">Team &amp; AWW/PTO Settings</button>
+      <button class="btn" id="workloadBtn" type="button">Team Workload</button>
+      <button class="btn" id="projectHoursBtn" type="button">Project Hours</button>
+      <button class="btn" id="settingsBtn" type="button">
+        Team &amp; AWW/PTO Settings
+      </button>
     </div>
   </div>
 
   <div class="panel" id="settingsPanel">
     <h3>Team Members, Department, AWW &amp; PTO</h3>
-    <label class="small">Each person's Alternative Work Week (AWW) day off is tracked individually: set an anchor
-      date (a Friday they had off) and every other Friday from that date auto-marks their Friday cells off.
-      PTO is entered directly on the schedule grid in the PTO row for each week — check a day to mark that
-      person out, and it shades the same way AWW days do. Department controls which badge shows next to their
-      name and can be used to filter the schedule view above.</label>
+    <label class="small">
+      Set an anchor Friday off for each Alternative Work Week team member.
+      Every other Friday from that date is marked off.
+      Enter PTO using the checkboxes in the schedule.
+      Department controls the badge and department filter.
+    </label>
     <div id="memberListSettings" style="margin-top:8px;"></div>
   </div>
 
   <div class="panel" id="workloadPanel">
     <h3>Team Workload — Projects per Team Member</h3>
-    <label class="small">A quick roster-wide view of who is on what. Updates automatically as project rows are
-      added, removed, or reassigned.</label>
+    <label class="small">
+      A roster-wide view of project assignments.
+    </label>
     <div id="workloadContent" style="margin-top:10px;"></div>
   </div>
 
   <div class="panel" id="projectHoursPanel">
     <h3>Project Hours &amp; Budget Tracker</h3>
-    <label class="small">Totals across every team member and every week that has been entered into the schedule.
-      Recalculates automatically whenever the schedule is edited or refreshes, so this always reflects the
-      latest saved data.</label>
-    <div id="projectHoursContent" style="margin-top:10px;"></div>
+    <label class="small">
+      Totals across every team member and recorded week.
+      “This Week” refers to the first displayed week.
+      Removed project rows are excluded from these totals.
+    </label>
+    <div class="grid-wrap" id="projectHoursContent" style="margin-top:10px;"></div>
   </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
 <script>
-const DAY_KEYS = ['mon','tue','wed','thu','fri'];
-const DAY_LABELS = {mon:'Mon', tue:'Tue', wed:'Wed', thu:'Thu', fri:'Fri'};
-const POLL_MS = 15000;
+'use strict';
 
-const UNIFIED_STAGES = [
-  {id:'ds',  name:'DS',  label:'Density Studies',          color:'#2C5F7C'},
-  {id:'con', name:'CON', label:'Concept Design',            color:'#4B8A5E'},
-  {id:'es',  name:'ES',  label:'Entitlement Sets',          color:'#B8862B'},
-  {id:'sd',  name:'SD',  label:'Schematic Design',          color:'#6B5B95'},
-  {id:'dd',  name:'DD',  label:'Design Development',        color:'#3E8E8A'},
-  {id:'cd',  name:'CD',  label:'Construction Documents',    color:'#8A5A3E'},
-  {id:'ca',  name:'CA',  label:'Construction Admin',        color:'#7A4B8A'},
-];
+// ============================================================================
+// CONFIGURATION
+// ============================================================================
 
-function uid(){ return Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4); }
+// Entra app registration → Overview → Directory (tenant) ID.
+// This is a public identifier. Never put the Entra client secret in this file.
+const ENTRA_TENANT_ID = '9c0c8b54-6ae5-48b0-87aa-4c327c01af71';
 
-function defaultState(){
-  // Used only if there is truly nothing in Firebase yet (brand-new deployment
-  // with no legacy data to migrate).
-  const t1 = uid(), t2 = uid();
-  return {
-    studioName: 'KTGY LA Studio',
-    anchorOffFriday: '2026-01-02',
-    stages: UNIFIED_STAGES,
-    team: [
-      {id:t1, name:'Alyssa', role:'Designer', department:'Design', awwEnabled:true, awwAnchor:'2026-01-02'},
-      {id:t2, name:'Fernanda', role:'Technical Project Manager', department:'Technical', awwEnabled:false, awwAnchor:'2026-01-02'},
-    ],
-    rows: [
-      {id:uid(), teamId:t1, projectNumber:'', projectName:'Sample Project', client:'', location:'', stageId:'con', designLead:'', qaqcDate:'', techLead:'', projectType:'', projectStatus:''},
-      {id:uid(), teamId:t2, projectNumber:'', projectName:'Sample Project', client:'', location:'', stageId:'cd', designLead:'', qaqcDate:'', techLead:'', projectType:'', projectStatus:''},
-    ],
-    weeks: {}
-  };
-}
-
-let state = null;
-let lastSyncedAt = null;
-let weeksToShow = 1;
-let deptFilter = 'all';
-
-function mondayOf(dateStr){
-  const d = new Date(dateStr + 'T00:00:00');
-  const day = d.getDay();
-  const diff = (day === 0 ? -6 : 1 - day);
-  d.setDate(d.getDate() + diff);
-  return d;
-}
-function iso(d){ return d.toISOString().slice(0,10); }
-function fmt(d){ return d.toLocaleDateString('en-US',{month:'short', day:'numeric'}); }
-function addDaysIso(dateStr, offsetDays){
-  const d = new Date(dateStr + 'T00:00:00');
-  d.setDate(d.getDate() + offsetDays);
-  return iso(d);
-}
-function dayDateObj(weekKeyStr, dayIndex){
-  const d = new Date(weekKeyStr + 'T00:00:00');
-  d.setDate(d.getDate() + dayIndex);
-  return d;
-}
-
-let currentMonday = iso(mondayOf(iso(new Date())));
-function weekKey(){ return currentMonday; }
-function fridayDateOf(mondayStr){ const d = new Date(mondayStr + 'T00:00:00'); d.setDate(d.getDate()+4); return d; }
-function isAutoOffFriday(mondayStr, anchorDateStr){
-  const anchorMonday = mondayOf(anchorDateStr);
-  const thisMonday = new Date(mondayStr + 'T00:00:00');
-  const diffDays = Math.round((thisMonday - anchorMonday) / 86400000);
-  const diffWeeks = Math.round(diffDays / 7);
-  return ((diffWeeks % 2) + 2) % 2 === 0;
-}
-
-function ensureWeekOn(stateObj, mondayStr){
-  if(!stateObj.weeks) stateObj.weeks = {};
-  if(!stateObj.weeks[mondayStr]) stateObj.weeks[mondayStr] = { flags:{}, pto:{} };
-  if(!stateObj.weeks[mondayStr].flags) stateObj.weeks[mondayStr].flags = {};
-  if(!stateObj.weeks[mondayStr].pto) stateObj.weeks[mondayStr].pto = {};
-  return stateObj.weeks[mondayStr];
-}
-function emptyDayEntry(){ return {hours:null, note:''}; }
-function ensureRowFlagsOn(stateObj, mondayStr, rowId){
-  const wk = ensureWeekOn(stateObj, mondayStr);
-  if(!wk.flags[rowId]) wk.flags[rowId] = {mon:emptyDayEntry(),tue:emptyDayEntry(),wed:emptyDayEntry(),thu:emptyDayEntry(),fri:emptyDayEntry()};
-  return wk.flags[rowId];
-}
-function ensurePtoOn(stateObj, mondayStr, teamId){
-  const wk = ensureWeekOn(stateObj, mondayStr);
-  if(!wk.pto[teamId]) wk.pto[teamId] = {mon:false,tue:false,wed:false,thu:false,fri:false};
-  return wk.pto[teamId];
-}
-
-// Firebase Realtime Database silently drops keys whose value is an empty
-// object/array (e.g. weeks:{} before any hours are logged) — reading that
-// path back gives undefined, not {}. Any state coming from an external
-// source (cache, Firebase, migration) must be run through this before use,
-// so a missing/dropped key can never crash rendering.
-function normalizeState(s){
-  if(!s || typeof s !== 'object') return defaultState();
-  if(!s.weeks || typeof s.weeks !== 'object') s.weeks = {};
-  Object.keys(s.weeks).forEach(wk=>{
-    if(!s.weeks[wk] || typeof s.weeks[wk] !== 'object') s.weeks[wk] = {};
-    if(!s.weeks[wk].flags || typeof s.weeks[wk].flags !== 'object') s.weeks[wk].flags = {};
-    if(!s.weeks[wk].pto || typeof s.weeks[wk].pto !== 'object') s.weeks[wk].pto = {};
-  });
-  if(!Array.isArray(s.stages) || s.stages.length === 0) s.stages = UNIFIED_STAGES;
-  if(!Array.isArray(s.team)) s.team = [];
-  s.team.forEach(m=>{ if(!m.department) m.department = 'Design'; });
-  if(!Array.isArray(s.rows)) s.rows = [];
-  if(!s.studioName) s.studioName = 'KTGY LA Studio';
-  return s;
-}
-
-// ---------- storage layer ----------
-// This file works as a plain, standalone .html file opened directly in a
-// browser (no server session, no account needed to USE it). Two layers:
-//  1) localStorage — instant local cache so your own edits never disappear,
-//     even offline.
-//  2) Firebase Realtime Database — every teammate's browser reads/writes the
-//     SAME database, so edits made on any computer show up for everyone else
-//     automatically and instantly (no polling delay, no expiring data).
-const LOCAL_CACHE_KEY = 'ktgy-schedule-cache-unified-v1';
-const LEGACY_DESIGN_PATH = 'schedule';
-const LEGACY_TECHNICAL_PATH = 'schedule_la_technical_team';
 const UNIFIED_PATH = 'schedule_unified_v1';
 
 const firebaseConfig = {
@@ -377,696 +758,1441 @@ const firebaseConfig = {
   messagingSenderId: "453910203055",
   appId: "1:453910203055:web:87ae79fe1f008619b8a25a"
 };
-let firebaseAvailable = true;
-let db, scheduleRef;
-try{
-  if(typeof firebase === 'undefined') throw new Error('Firebase SDK did not load (blocked network / no internet?)');
-  firebase.initializeApp(firebaseConfig);
-  db = firebase.database();
-  scheduleRef = db.ref(UNIFIED_PATH);
-}catch(e){
-  console.error('Firebase unavailable, falling back to local-only mode:', e);
-  firebaseAvailable = false;
-  const noopRef = {
-    get: async () => ({ exists: () => false, val: () => null }),
-    set: async () => {},
-    on: () => {}
-  };
-  db = { ref: () => noopRef };
-  scheduleRef = noopRef;
+
+const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri'];
+const DAY_LABELS = {
+  mon:'Mon', tue:'Tue', wed:'Wed', thu:'Thu', fri:'Fri'
+};
+
+const UNIFIED_STAGES = [
+  {id:'ds',  name:'DS',  label:'Density Studies',        color:'#2C5F7C'},
+  {id:'con', name:'CON', label:'Concept Design',         color:'#4B8A5E'},
+  {id:'es',  name:'ES',  label:'Entitlement Sets',       color:'#B8862B'},
+  {id:'sd',  name:'SD',  label:'Schematic Design',       color:'#6B5B95'},
+  {id:'dd',  name:'DD',  label:'Design Development',     color:'#3E8E8A'},
+  {id:'cd',  name:'CD',  label:'Construction Documents', color:'#8A5A3E'},
+  {id:'ca',  name:'CA',  label:'Construction Admin',     color:'#7A4B8A'}
+];
+
+// ============================================================================
+// APPLICATION STATE
+// ============================================================================
+
+const $ = id => document.getElementById(id);
+const app = $('scheduleApp');
+
+let auth = null;
+let db = null;
+let scheduleRef = null;
+
+let state = null;
+let ready = false;
+let connected = false;
+let writeFailed = false;
+let pendingWrites = 0;
+let writeQueue = Promise.resolve();
+
+let sessionVersion = 0;
+let scheduleListener = null;
+let connectionListener = null;
+let connectionRef = null;
+let signInBusy = false;
+let renderDeferred = false;
+
+let weeksToShow = 1;
+let deptFilter = 'all';
+let currentMonday = mondayOf(localISO(new Date()));
+
+// ============================================================================
+// GENERAL HELPERS
+// ============================================================================
+
+function uid() {
+  return crypto.randomUUID();
 }
 
-function saveLocalCache(obj){
-  try{ localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(obj)); }catch(e){}
-}
-function loadLocalCache(){
-  try{
-    const raw = localStorage.getItem(LOCAL_CACHE_KEY);
-    if(raw) return JSON.parse(raw);
-  }catch(e){}
-  return null;
-}
-
-function withTimeout(promise, ms){
-  return Promise.race([
-    promise,
-    new Promise((_, reject)=>setTimeout(()=>reject(new Error('timed out')), ms))
-  ]);
+function escapeHTML(value) {
+  return String(value ?? '').replace(/[&<>"']/g, character => ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  })[character]);
 }
 
-// ---------- one-time merge of the two legacy schedules ----------
-// Design-team stage ids collided with Technical-team stage ids (both used
-// "cd" for two different things: Concept Design vs Construction Documents).
-// "cd" is remapped to Construction Documents (the more standard usage) and
-// Design's Concept Design becomes "con" in the unified stage list, so no
-// project silently changes meaning during the merge.
-const DESIGN_STAGE_REMAP = { ds:'ds', cd:'con', es:'es' };
-const TECHNICAL_STAGE_REMAP = { sd:'sd', dd:'dd', cd:'cd', ca:'ca' };
+function safeColor(value) {
+  return /^#[0-9a-f]{6}$/i.test(String(value)) ? value : '#565F66';
+}
 
-function mergeLegacyDatasets(designData, technicalData){
-  const team = [];
-  const rows = [];
-  const weeks = {};
+function isObject(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
 
-  function pull(data, department, idPrefix, stageRemap){
-    if(!data) return;
-    (data.team || []).forEach(m=>{
-      const copy = Object.assign({}, m);
-      copy.id = idPrefix + m.id;
-      copy.department = department;
-      team.push(copy);
-    });
-    (data.rows || []).forEach(r=>{
-      const copy = Object.assign({}, r);
-      copy.id = idPrefix + r.id;
-      copy.teamId = idPrefix + r.teamId;
-      copy.stageId = stageRemap[r.stageId] || r.stageId || '';
-      rows.push(copy);
-    });
-    Object.keys(data.weeks || {}).forEach(wkKey=>{
-      if(!weeks[wkKey]) weeks[wkKey] = { flags:{}, pto:{} };
-      const srcFlags = (data.weeks[wkKey] || {}).flags || {};
-      Object.keys(srcFlags).forEach(rowId=>{
-        weeks[wkKey].flags[idPrefix + rowId] = srcFlags[rowId];
-      });
-      const srcPto = (data.weeks[wkKey] || {}).pto || {};
-      Object.keys(srcPto).forEach(teamId=>{
-        weeks[wkKey].pto[idPrefix + teamId] = srcPto[teamId];
-      });
-    });
+function normalizeState(raw) {
+  if (!isObject(raw)) {
+    throw new Error('The schedule data has an invalid structure.');
   }
 
-  pull(designData, 'Design', 'd_', DESIGN_STAGE_REMAP);
-  pull(technicalData, 'Technical', 't_', TECHNICAL_STAGE_REMAP);
+  const s = JSON.parse(JSON.stringify(raw));
 
-  return normalizeState({
-    studioName: 'KTGY LA Studio',
-    anchorOffFriday: '2026-01-02',
-    stages: UNIFIED_STAGES,
-    team, rows, weeks
+  // Firebase omits empty objects and arrays.
+  if (s.team == null) s.team = [];
+  if (s.rows == null) s.rows = [];
+
+  if (!Array.isArray(s.team) || !Array.isArray(s.rows)) {
+    throw new Error('The schedule team or project list is invalid.');
+  }
+
+  if (
+    s.team.some(member => !isObject(member) || typeof member.id !== 'string') ||
+    s.rows.some(row => !isObject(row) || typeof row.id !== 'string')
+  ) {
+    throw new Error('A team member or project row is invalid.');
+  }
+
+  if (!Array.isArray(s.stages) || s.stages.length === 0) {
+    s.stages = JSON.parse(JSON.stringify(UNIFIED_STAGES));
+  }
+
+  if (s.stages.some(stage => !isObject(stage))) {
+    throw new Error('The project stage list is invalid.');
+  }
+
+  if (!isObject(s.weeks)) s.weeks = {};
+
+  Object.keys(s.weeks).forEach(key => {
+    if (!isObject(s.weeks[key])) s.weeks[key] = {};
+    if (!isObject(s.weeks[key].flags)) s.weeks[key].flags = {};
+    if (!isObject(s.weeks[key].pto)) s.weeks[key].pto = {};
+  });
+
+  s.team.forEach(member => {
+    if (!member.department) member.department = 'Design';
+  });
+
+  if (!s.studioName) s.studioName = 'KTGY LA Studio';
+  if (!s.anchorOffFriday) s.anchorOffFriday = '2026-01-02';
+
+  return s;
+}
+
+function localISO(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function parseDate(value) {
+  return new Date(value + 'T12:00:00');
+}
+
+function validDate(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value))) return false;
+  const date = parseDate(value);
+  return !Number.isNaN(date.getTime()) && localISO(date) === value;
+}
+
+function mondayOf(value) {
+  const date = parseDate(value);
+  const day = date.getDay();
+  date.setDate(date.getDate() + (day === 0 ? -6 : 1 - day));
+  return localISO(date);
+}
+
+function addDaysISO(value, days) {
+  const date = parseDate(value);
+  date.setDate(date.getDate() + days);
+  return localISO(date);
+}
+
+function fmt(value) {
+  return parseDate(value).toLocaleDateString('en-US', {
+    month:'short',
+    day:'numeric'
   });
 }
 
-// Runs once per deployment: if the unified path already has data, use it
-// as-is (migration already happened). Otherwise, pull both legacy datasets,
-// merge them, and write the result to the unified path. Nothing is deleted
-// from the legacy paths — they remain as an untouched backup.
-async function migrateLegacyIfNeeded(){
-  try{
-    const unifiedSnap = await withTimeout(scheduleRef.get(), 5000);
-    if(unifiedSnap.exists()) return normalizeState(unifiedSnap.val());
-  }catch(e){ /* fall through and attempt migration below */ }
-
-  let designData = null, technicalData = null;
-  try{
-    const s = await withTimeout(db.ref(LEGACY_DESIGN_PATH).get(), 5000);
-    if(s.exists()) designData = s.val();
-  }catch(e){}
-  try{
-    const s = await withTimeout(db.ref(LEGACY_TECHNICAL_PATH).get(), 5000);
-    if(s.exists()) technicalData = s.val();
-  }catch(e){}
-
-  if(!designData && !technicalData) return null; // nothing to migrate
-
-  const merged = mergeLegacyDatasets(designData, technicalData);
-  try{ await withTimeout(scheduleRef.set(merged), 8000); }catch(e){ console.error('Migration write failed', e); }
-  return merged;
+function activeWeekKeys() {
+  return weeksToShow === 2
+    ? [currentMonday, addDaysISO(currentMonday, 7)]
+    : [currentMonday];
 }
 
-// Apply a change to local state RIGHT NOW — synchronous, no network involved.
-// The caller can re-render immediately without waiting on anything.
-function mutateState(mutatorFn){
-  if(!state) state = defaultState();
-  mutatorFn(state);
-  saveLocalCache(state);
-  syncToCloudInBackground();
+function utcDayNumber(value) {
+  const [year, month, day] = value.split('-').map(Number);
+  return Date.UTC(year, month - 1, day) / 86400000;
 }
 
-// Push the current local state to Firebase in the background. This never
-// blocks the UI: if it's slow, hangs, or fails (blocked network, denied
-// permissions, offline), the person editing never notices — their own
-// screen already updated instantly via mutateState() above.
-function syncToCloudInBackground(){
-  const snapshot = state;
-  withTimeout(scheduleRef.set(snapshot), 6000)
-    .then(()=> updateSyncIndicator(true))
-    .catch(e=>{ console.error('Cloud save failed', e); updateSyncIndicator(false); });
+function isAutoOffFriday(week, anchor) {
+  if (!validDate(anchor)) return false;
+
+  const diffWeeks =
+    (utcDayNumber(week) - utcDayNumber(mondayOf(anchor))) / 7;
+
+  return ((diffWeeks % 2) + 2) % 2 === 0;
 }
 
-async function pullLatest(){
-  try{
-    const snap = await withTimeout(scheduleRef.get(), 5000);
-    if(snap.exists()){
-      const incomingObj = snap.val();
-      if(JSON.stringify(incomingObj) !== JSON.stringify(state)){
-        state = normalizeState(incomingObj);
-        saveLocalCache(state);
-        renderAll();
-      }
-      updateSyncIndicator(true);
-      return;
-    }
-  }catch(e){}
-  updateSyncIndicator(false);
+function ensureWeek(s, week) {
+  if (!isObject(s.weeks)) s.weeks = {};
+  if (!isObject(s.weeks[week])) s.weeks[week] = {};
+  if (!isObject(s.weeks[week].flags)) s.weeks[week].flags = {};
+  if (!isObject(s.weeks[week].pto)) s.weeks[week].pto = {};
+  return s.weeks[week];
 }
 
-function isEditingNow(){
-  const el = document.activeElement;
-  if(!el) return false;
-  const tag = el.tagName;
-  return (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') && document.querySelector('.sheet').contains(el);
+function ensureDay(s, week, rowId, day) {
+  const wk = ensureWeek(s, week);
+
+  if (!isObject(wk.flags[rowId])) wk.flags[rowId] = {};
+  if (!isObject(wk.flags[rowId][day])) {
+    wk.flags[rowId][day] = {hours:null, note:''};
+  }
+
+  return wk.flags[rowId][day];
 }
 
-function updateSyncIndicator(ok){
-  const dot = document.getElementById('syncDot');
-  const text = document.getElementById('syncText');
-  if(!firebaseAvailable){
-    dot.classList.add('stale');
-    text.textContent = 'not connected — working locally only, not shared with your team';
+function ensurePTO(s, week, memberId) {
+  const wk = ensureWeek(s, week);
+  if (!isObject(wk.pto[memberId])) wk.pto[memberId] = {};
+  return wk.pto[memberId];
+}
+
+function hoursValue(entry) {
+  const number = Number(entry?.hours);
+  return Number.isFinite(number) ? number : 0;
+}
+
+function memberPTO(s, memberId, week, day) {
+  return !!s.weeks?.[week]?.pto?.[memberId]?.[day];
+}
+
+function dayOffInfo(s, member, week, day) {
+  if (memberPTO(s, member.id, week, day)) {
+    return {isOff:true, label:'PTO'};
+  }
+
+  if (
+    day === 'fri' &&
+    member.awwEnabled &&
+    isAutoOffFriday(week, member.awwAnchor || s.anchorOffFriday)
+  ) {
+    return {isOff:true, label:'AWW'};
+  }
+
+  return {isOff:false, label:''};
+}
+
+function dailyCapacity(s, member, week, day) {
+  if (dayOffInfo(s, member, week, day).isOff) return 0;
+  if (day === 'fri') return 8;
+  return member.awwEnabled ? 9 : 8;
+}
+
+function visibleTeam() {
+  return deptFilter === 'all'
+    ? state.team
+    : state.team.filter(member => member.department === deptFilter);
+}
+
+function rowsForMember(memberId, s = state) {
+  return s.rows.filter(row => row.teamId === memberId);
+}
+
+function stageById(id) {
+  return state.stages.find(stage => stage.id === id);
+}
+
+function requireMember(s, memberId) {
+  const member = s.team.find(item => item.id === memberId);
+  if (!member) throw new Error('This team member was removed. Reload the schedule.');
+  return member;
+}
+
+function requireRow(s, rowId) {
+  const row = s.rows.find(item => item.id === rowId);
+  if (!row) throw new Error('This project row was removed. Reload the schedule.');
+  return row;
+}
+
+function isEditingNow() {
+  const active = document.activeElement;
+  return !!(
+    active &&
+    app.contains(active) &&
+    ['INPUT', 'SELECT', 'TEXTAREA'].includes(active.tagName)
+  );
+}
+
+function requestRender() {
+  if (!ready || !state) return;
+
+  if (isEditingNow()) {
+    renderDeferred = true;
     return;
   }
-  if(ok){
-    dot.classList.remove('stale');
-    text.textContent = 'synced live';
+
+  renderAll();
+}
+
+function setAuthMessage(message) {
+  $('authMessage').textContent = message;
+}
+
+function refreshSyncIndicator() {
+  let message;
+  let healthy = false;
+
+  if (writeFailed) {
+    message = 'Save failed — reload before editing';
+  } else if (pendingWrites > 0) {
+    message = connected
+      ? `Saving… (${pendingWrites})`
+      : 'Save pending — reconnect; keep this tab open';
+  } else if (!connected) {
+    message = 'Disconnected — editing disabled';
+  } else if (!ready) {
+    message = 'Loading…';
   } else {
-    dot.classList.add('stale');
-    text.textContent = 'offline — showing last saved copy';
+    healthy = true;
+    message = 'synced live';
   }
+
+  $('syncDot').classList.toggle('stale', !healthy);
+  $('syncText').textContent = message;
+
+  $('signOutBtn').disabled = pendingWrites > 0;
+  $('refreshBtn').disabled = pendingWrites > 0;
 }
 
-scheduleRef.on('value', (snap) => {
-  if(!snap.exists()) return;
-  const incomingObj = snap.val();
-  if(isEditingNow()) return; // don't yank the field out from under an active edit
-  if(JSON.stringify(incomingObj) !== JSON.stringify(state)){
-    state = normalizeState(incomingObj);
-    saveLocalCache(state);
-    renderAll();
+// ============================================================================
+// AUTHENTICATION AND DATABASE LIFECYCLE
+// ============================================================================
+
+function sameSession(version, userId) {
+  return (
+    sessionVersion === version &&
+    auth?.currentUser?.uid === userId
+  );
+}
+
+function clearScheduleView() {
+  app.hidden = true;
+
+  [
+    'legend',
+    'scheduleHeadRow',
+    'scheduleBody',
+    'memberListSettings',
+    'workloadContent',
+    'projectHoursContent'
+  ].forEach(id => $(id).replaceChildren());
+
+  $('studioName').value = '';
+  $('teamSize').textContent = '0';
+  $('weekRange').textContent = '—';
+
+  document.querySelectorAll('.panel').forEach(panel => {
+    panel.classList.remove('open');
+  });
+}
+
+function stopScheduleSession() {
+  ready = false;
+
+  if (scheduleListener && scheduleRef) {
+    scheduleRef.off('value', scheduleListener);
   }
-  updateSyncIndicator(true);
-});
-db.ref('.info/connected').on('value', (snap) => {
-  updateSyncIndicator(snap.val() === true);
-});
 
-async function load(){
-  const cached = loadLocalCache();
-  if(cached) state = normalizeState(cached);
+  if (connectionListener && connectionRef) {
+    connectionRef.off('value', connectionListener);
+  }
 
-  try{
-    const migrated = await migrateLegacyIfNeeded();
-    if(migrated){
-      state = migrated;
-      saveLocalCache(state);
-      return;
+  scheduleListener = null;
+  connectionListener = null;
+  connectionRef = null;
+
+  state = null;
+  connected = false;
+  writeFailed = false;
+  pendingWrites = 0;
+  writeQueue = Promise.resolve();
+  renderDeferred = false;
+
+  clearScheduleView();
+  refreshSyncIndicator();
+}
+
+function describeLoadError(error) {
+  const code = String(error?.code || '').toLowerCase();
+
+  if (code.includes('permission')) {
+    return 'Signed in, but Firebase denied schedule access. ' +
+      'Check the Realtime Database rules for schedule_unified_v1.';
+  }
+
+  return error?.message ||
+    'The schedule could not be loaded. Check your connection and retry.';
+}
+
+function failScheduleSession(error) {
+  console.error('Schedule unavailable:', error);
+
+  // Invalidate unfinished work from this session.
+  sessionVersion++;
+  stopScheduleSession();
+
+  $('retryBtn').hidden = !auth?.currentUser;
+  $('signOutBtn').hidden = !auth?.currentUser;
+  setAuthMessage(describeLoadError(error));
+}
+
+async function readSchedule() {
+  const snap = await scheduleRef.get();
+
+  if (!snap.exists()) {
+    throw new Error(
+      'No schedule exists at schedule_unified_v1. ' +
+      'An administrator must initialize or migrate the data. ' +
+      'This page will not automatically create or overwrite it.'
+    );
+  }
+
+  return normalizeState(snap.val());
+}
+
+function attachLiveListeners(version, userId) {
+  scheduleListener = snap => {
+    if (!sameSession(version, userId)) return;
+
+    try {
+      if (!snap.exists()) {
+        throw new Error('The schedule was removed from the database.');
+      }
+
+      state = normalizeState(snap.val());
+      requestRender();
+    } catch (error) {
+      failScheduleSession(error);
     }
-  }catch(e){ /* fall through to cache/default below */ }
+  };
 
-  if(!state){
-    state = defaultState();
-    saveLocalCache(state);
-    withTimeout(scheduleRef.set(state), 5000).catch(()=>{});
+  scheduleRef.on('value', scheduleListener, error => {
+    if (sameSession(version, userId)) failScheduleSession(error);
+  });
+
+  connectionRef = db.ref('.info/connected');
+  connectionListener = snap => {
+    if (!sameSession(version, userId)) return;
+    connected = snap.val() === true;
+    refreshSyncIndicator();
+  };
+
+  connectionRef.on('value', connectionListener);
+}
+
+async function handleAuthStateChanged(user) {
+  const version = ++sessionVersion;
+  stopScheduleSession();
+
+  $('signInBtn').hidden = !!user;
+  $('signOutBtn').hidden = !user;
+  $('retryBtn').hidden = true;
+
+  if (!user) {
+    setAuthMessage('Sign in with your company Microsoft account.');
+    return;
+  }
+
+  setAuthMessage('Signed in. Loading the shared schedule…');
+
+  try {
+    const incoming = await readSchedule();
+    if (!sameSession(version, user.uid)) return;
+
+    state = incoming;
+    ready = true;
+
+    renderAll();
+    app.hidden = false;
+
+    setAuthMessage(
+      'Signed in as ' + (user.email || user.displayName || 'company user')
+    );
+
+    attachLiveListeners(version, user.uid);
+  } catch (error) {
+    if (sameSession(version, user.uid)) failScheduleSession(error);
   }
 }
 
-function stageById(id){ return state.stages.find(s=>s.id===id); }
-function memberById(id){ return state.team.find(t=>t.id===id); }
-function rowsForMember(teamId){ return state.rows.filter(r=>r.teamId===teamId); }
-function visibleTeam(){ return deptFilter==='all' ? state.team : state.team.filter(m=>m.department===deptFilter); }
+async function signIn() {
+  if (!auth || signInBusy) return;
 
-function isMemberAutoOffFriday(member, wkKey){
-  if(!member.awwEnabled) return false;
-  return isAutoOffFriday(wkKey, member.awwAnchor || state.anchorOffFriday);
-}
-function isMemberPTO(member, wkKey, day){
-  const wk = state.weeks[wkKey];
-  return !!(wk && wk.pto && wk.pto[member.id] && wk.pto[member.id][day]);
-}
-// Returns {isOff, label} — PTO takes precedence over AWW if somehow both apply.
-function dayOffInfo(member, wkKey, day){
-  if(isMemberPTO(member, wkKey, day)) return {isOff:true, label:'PTO'};
-  if(day === 'fri' && isMemberAutoOffFriday(member, wkKey)) return {isOff:true, label:'AWW'};
-  return {isOff:false, label:null};
-}
-function dailyCapacity(member, day, wkKey){
-  if(isMemberPTO(member, wkKey, day)) return 0;
-  if(day !== 'fri') return member.awwEnabled ? 9 : 8;
-  if(!member.awwEnabled) return 8;
-  return isMemberAutoOffFriday(member, wkKey) ? 0 : 8;
-}
-function roundHalf(x){ return Math.round(x*2)/2; }
-function activeWeekKeys(){
-  const offsets = weeksToShow === 2 ? [0,7] : [0];
-  return offsets.map(off => addDaysIso(currentMonday, off));
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+      .test(ENTRA_TENANT_ID)) {
+    setAuthMessage(
+      'Set ENTRA_TENANT_ID in index.html to your Directory (tenant) ID.'
+    );
+    return;
+  }
+
+  signInBusy = true;
+  $('signInBtn').disabled = true;
+  setAuthMessage('Opening Microsoft sign-in…');
+
+  try {
+    const provider = new firebase.auth.OAuthProvider('microsoft.com');
+    provider.setCustomParameters({tenant:ENTRA_TENANT_ID});
+
+    // Invoke directly from the button click so browsers allow the popup.
+    await auth.signInWithPopup(provider);
+  } catch (error) {
+    console.error('Microsoft sign-in failed:', error);
+
+    const messages = {
+      'auth/popup-closed-by-user':
+        'Sign-in canceled. Click Sign in with Microsoft to try again.',
+      'auth/popup-blocked':
+        'Your browser blocked the sign-in popup. Allow popups and try again.',
+      'auth/unauthorized-domain':
+        'This hostname is not authorized in Firebase Authentication. ' +
+        'Add rtovar-ktgy.github.io to Authorized domains.',
+      'auth/operation-not-allowed':
+        'Enable the Microsoft provider in Firebase Authentication.',
+      'auth/network-request-failed':
+        'Sign-in could not reach Firebase. Check your connection.'
+    };
+
+    setAuthMessage(
+      messages[error.code] ||
+      'Sign-in failed: ' + (error.code || 'unknown error')
+    );
+  } finally {
+    signInBusy = false;
+    $('signInBtn').disabled = false;
+  }
 }
 
-function renderAll(){
-  document.getElementById('studioName').value = state.studioName;
-  document.getElementById('weekPicker').value = weekKey();
-  document.getElementById('deptFilter').value = deptFilter;
-  const mon = new Date(weekKey()+'T00:00:00');
-  const lastWk = activeWeekKeys()[activeWeekKeys().length-1];
-  const fri = fridayDateOf(lastWk);
-  document.getElementById('weekRange').textContent = fmt(mon) + ' - ' + fmt(fri);
-  document.getElementById('teamSize').textContent = visibleTeam().length;
-  document.getElementById('oneWeekBtn').classList.toggle('active', weeksToShow===1);
-  document.getElementById('twoWeekBtn').classList.toggle('active', weeksToShow===2);
-  document.getElementById('scheduleTable').classList.toggle('two-week', weeksToShow===2);
+async function signOut() {
+  if (!auth || pendingWrites > 0) return;
+
+  $('signOutBtn').disabled = true;
+
+  try {
+    await auth.signOut();
+  } catch (error) {
+    console.error('Sign-out failed:', error);
+    setAuthMessage('Sign-out failed. Please try again.');
+  } finally {
+    $('signOutBtn').disabled = pendingWrites > 0;
+  }
+}
+
+async function initializeAuthentication() {
+  clearScheduleView();
+
+  // Remove known caches from previous unauthenticated versions.
+  // This version does not persist schedule data in localStorage.
+  try {
+    [
+      'ktgy-schedule-cache-unified-v1',
+      'ktgy-schedule-cache-v1',
+      'studio-schedule-v2',
+      'studio-schedule-v3'
+    ].forEach(key => localStorage.removeItem(key));
+  } catch (error) {
+    console.warn('Could not clear old browser caches:', error);
+  }
+
+  try {
+    if (
+      typeof firebase === 'undefined' ||
+      typeof firebase.auth !== 'function' ||
+      typeof firebase.database !== 'function'
+    ) {
+      throw new Error('The Firebase SDK could not load.');
+    }
+
+    firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
+    db = firebase.database();
+    scheduleRef = db.ref(UNIFIED_PATH);
+
+    await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+
+    auth.onAuthStateChanged(user => {
+      void handleAuthStateChanged(user);
+    }, error => {
+      console.error('Authentication observer failed:', error);
+      sessionVersion++;
+      stopScheduleSession();
+      setAuthMessage('Authentication failed. Reload the page to try again.');
+    });
+  } catch (error) {
+    console.error('Application startup failed:', error);
+    $('signInBtn').hidden = true;
+    $('signOutBtn').hidden = true;
+    setAuthMessage(
+      'Authentication could not start. Check your connection and reload. ' +
+      (error.message || '')
+    );
+  }
+}
+
+// ============================================================================
+// DATABASE WRITES
+// ============================================================================
+
+// Mutations are queued within this tab and applied as RTDB transactions.
+// Firebase retries a transaction against newer data if another client writes.
+// Mutators must be synchronous and safe to run more than once.
+
+function mutateState(mutator) {
+  if (
+    !auth?.currentUser ||
+    !ready ||
+    !state ||
+    !connected ||
+    writeFailed
+  ) {
+    alert(
+      'Editing is unavailable. Check your connection, or reload ' +
+      'if a previous save failed.'
+    );
+    if (state && ready) renderAll();
+    return Promise.resolve(false);
+  }
+
+  const version = sessionVersion;
+  const userId = auth.currentUser.uid;
+
+  pendingWrites++;
+  refreshSyncIndicator();
+
+  const operation = writeQueue.then(async () => {
+    if (!sameSession(version, userId) || !ready || writeFailed) {
+      return false;
+    }
+
+    const result = await scheduleRef.transaction(current => {
+      if (!sameSession(version, userId) || !ready || writeFailed) {
+        return undefined;
+      }
+
+      // Never seed an absent schedule from a client's cached data.
+      if (current === null) return undefined;
+
+      const next = normalizeState(current);
+      mutator(next);
+      return next;
+    }, undefined, false);
+
+    if (!sameSession(version, userId)) return false;
+
+    if (!result.committed) {
+      throw new Error(
+        'The edit was not committed. Reload the schedule before editing again.'
+      );
+    }
+
+    // The live listener supplies the latest state, including other users' edits.
+    return true;
+  }).catch(error => {
+    if (sameSession(version, userId)) {
+      console.error('Schedule save failed:', error);
+      writeFailed = true;
+
+      setAuthMessage(
+        'An edit could not be saved. Reload before editing again. ' +
+        (error.message || '')
+      );
+
+      if (ready && state) renderAll();
+    }
+
+    return false;
+  }).finally(() => {
+    if (sameSession(version, userId)) {
+      pendingWrites--;
+      refreshSyncIndicator();
+      requestRender();
+    }
+  });
+
+  writeQueue = operation;
+  return operation;
+}
+
+async function refreshSchedule() {
+  if (!auth?.currentUser || !ready || pendingWrites > 0) return;
+
+  // Rebuild the authenticated session and discard any failed local input.
+  await handleAuthStateChanged(auth.currentUser);
+}
+
+// ============================================================================
+// RENDERING
+// ============================================================================
+
+function renderAll() {
+  if (!ready || !state) return;
+  renderDeferred = false;
+
+  $('studioName').value = state.studioName;
+  $('weekPicker').value = currentMonday;
+  $('deptFilter').value = deptFilter;
+
+  const weeks = activeWeekKeys();
+  $('weekRange').textContent =
+    fmt(currentMonday) + ' - ' + fmt(addDaysISO(weeks[weeks.length - 1], 4));
+
+  $('teamSize').textContent = visibleTeam().length;
+  $('oneWeekBtn').classList.toggle('active', weeksToShow === 1);
+  $('twoWeekBtn').classList.toggle('active', weeksToShow === 2);
+  $('scheduleTable').classList.toggle('two-week', weeksToShow === 2);
 
   renderLegend();
   renderTableHead();
   renderTable();
-  renderSettingsPanel();
-  renderWorkloadPanel();
-  renderProjectHoursPanel();
+  renderSettings();
+  renderWorkload();
+  renderProjectHours();
 }
 
-function renderLegend(){
-  const el = document.getElementById('legend');
-  el.innerHTML = '<span class="legend-label">Stages</span>' +
-    state.stages.map(s => '<span class="chip" style="background:' + s.color + '"><span class="swatch"></span>' + s.name + ' - ' + s.label + '</span>').join('') +
-    '<span class="cap-key"><span class="cap-dot" style="background:var(--ok);"></span>at capacity <span class="cap-dot" style="background:var(--warn); margin-left:6px;"></span>under <span class="cap-dot" style="background:var(--redline); margin-left:6px;"></span>over</span>' +
-    '<span class="aww-note-legend">Blue-grey hatch = AWW day off. Red hatch = PTO. Enter hours to show them working anyway.</span>';
+function renderLegend() {
+  $('legend').innerHTML =
+    '<span class="legend-label">Stages</span>' +
+    state.stages.map(stage =>
+      `<span class="chip" style="background:${safeColor(stage.color)}">
+        <span class="swatch"></span>
+        ${escapeHTML(stage.name)} - ${escapeHTML(stage.label)}
+      </span>`
+    ).join('') +
+    `<span class="cap-key">
+      <span><span class="cap-dot" style="background:var(--ok)"></span>at capacity</span>
+      <span><span class="cap-dot" style="background:var(--warn)"></span>under</span>
+      <span><span class="cap-dot" style="background:var(--redline)"></span>over</span>
+    </span>
+    <span class="aww-note-legend">
+      Blue-grey hatch = AWW day off. Red hatch = PTO.
+      Enter hours to show work on an off day.
+    </span>`;
 }
 
-function escapeAttr(s){ return (s||'').toString().replace(/"/g,'&quot;'); }
+function renderTableHead() {
+  const headers = [
+    'Designer', 'Project #', 'Project Name', 'Client', 'Stage',
+    'Design Lead', 'QAQC Date', 'Tech Lead', 'Project Type', 'Project Status'
+  ];
 
-function renderTableHead(){
-  const headRow = document.getElementById('scheduleHeadRow');
-  const fixedHeaders = ['Designer','Project #','Project Name','Client','Stage','Design Lead','QAQC Date','Tech Lead','Project Type','Project Status'];
-  let html = fixedHeaders.map(h=>'<th>'+h+'</th>').join('');
-  activeWeekKeys().forEach(wkKey=>{
-    DAY_KEYS.forEach((day, i)=>{
-      const d = dayDateObj(wkKey, i);
-      html += '<th>' + DAY_LABELS[day] + ' ' + fmt(d) + '</th>';
+  let html = headers.map(label => `<th>${escapeHTML(label)}</th>`).join('');
+
+  activeWeekKeys().forEach(week => {
+    DAY_KEYS.forEach((day, index) => {
+      html += `<th>${DAY_LABELS[day]} ${fmt(addDaysISO(week, index))}</th>`;
     });
   });
-  headRow.innerHTML = html;
+
+  $('scheduleHeadRow').innerHTML = html;
 }
 
-function fieldCell(rowId, field, value, widthClass, mono){
-  return '<td class="field-cell ' + (widthClass||'') + '">' +
-    '<input type="text" data-field="' + field + '" data-row="' + rowId + '" value="' + escapeAttr(value) + '" style="' + (mono?"font-family:'IBM Plex Mono',monospace;font-weight:600;":'') + '">' +
-  '</td>';
+function fieldCell(row, field, width = 'wide', type = 'text') {
+  return `<td class="field-cell ${width}">
+    <input type="${type}" data-row="${escapeHTML(row.id)}"
+      data-field="${field}" value="${escapeHTML(row[field])}"
+      ${type === 'text' ? 'maxlength="500"' : ''}
+      aria-label="${field}">
+  </td>`;
 }
 
-function renderTable(){
-  const body = document.getElementById('scheduleBody');
-  if(!state.weeks) state.weeks = {};
-  const wkKeys = activeWeekKeys();
-  const totalDayCols = wkKeys.length * 5;
-  const totalCols = 10 + totalDayCols;
+function designerCell(member, rowspan) {
+  const department = member.department || 'Design';
+  const badge = department === 'Technical' ? 'technical' : 'design';
 
+  return `<td class="designer-cell" rowspan="${rowspan}">
+    <button class="rm" type="button"
+      data-action="remove-member" data-member="${escapeHTML(member.id)}">
+      x remove
+    </button>
+    ${escapeHTML(member.name)}
+    <span class="role">${escapeHTML(member.role)}</span>
+    <span class="dept-badge ${badge}">${escapeHTML(department)}</span>
+  </td>`;
+}
+
+function renderTable() {
+  const weeks = activeWeekKeys();
+  const totalColumns = 10 + weeks.length * 5;
   const team = visibleTeam();
-  if(team.length === 0){
-    body.innerHTML = '<tr><td colspan="' + totalCols + '" style="padding:20px; text-align:center; color:var(--ink-soft);">No team members match this filter.</td></tr>';
+
+  if (!team.length) {
+    $('scheduleBody').innerHTML =
+      `<tr><td colspan="${totalColumns}" style="padding:20px;text-align:center">
+        No team members match this filter.
+      </td></tr>`;
     return;
   }
 
   let html = '';
-  let rowStripe = 0;
-  team.forEach(member=>{
+
+  team.forEach((member, memberIndex) => {
     const rows = rowsForMember(member.id);
-    const extraRows = rows.length > 0 ? 2 : 1; // PTO row folded into totals block below + add row
-    const rowspan = Math.max(rows.length,1) + extraRows;
-    const deptBadge = '<span class="dept-badge ' + (member.department==='Technical'?'technical':'design') + '">' + escapeAttr(member.department||'Design') + '</span>';
+    const stripe = memberIndex % 2 ? 'alt' : '';
 
-    if(rows.length === 0){
-      html += '<tr class="' + (rowStripe%2?'alt':'') + '">' +
-        '<td class="designer-cell" rowspan="' + rowspan + '">' +
-          '<button class="rm" data-rm-member="' + member.id + '" title="Remove team member">x remove</button>' +
-          escapeAttr(member.name) +
-          '<span class="role">' + escapeAttr(member.role||'') + '</span>' + deptBadge +
-        '</td>' +
-        '<td colspan="' + (totalCols-1) + '" style="text-align:center; color:var(--ink-soft); font-size:12px; padding:10px;">No projects assigned</td>' +
-      '</tr>';
-    } else {
-      rows.forEach((row, idx)=>{
-        const stage = stageById(row.stageId);
-        const stripeClass = rowStripe%2 ? 'alt' : '';
-        html += '<tr class="' + stripeClass + '">';
-        if(idx===0){
-          html += '<td class="designer-cell" rowspan="' + rowspan + '">' +
-            '<button class="rm" data-rm-member="' + member.id + '" title="Remove team member">x remove</button>' +
-            escapeAttr(member.name) +
-            '<span class="role">' + escapeAttr(member.role||'') + '</span>' + deptBadge +
-          '</td>';
-        }
-        html += '<td class="field-cell narrow"><div class="proj-num-wrap">' +
-          '<button class="rm-row" data-rm-row="' + row.id + '" title="Remove this project">x</button>' +
-          '<input type="text" data-field="projectNumber" data-row="' + row.id + '" value="' + escapeAttr(row.projectNumber) + '" style="flex:1;font-family:\'IBM Plex Mono\',monospace;font-weight:600;">' +
-          '</div></td>';
-        html += fieldCell(row.id,'projectName',row.projectName,'wide');
-        html += fieldCell(row.id,'client',row.client,'wide');
-        html += '<td class="field-cell narrow"><select class="stage-select" data-field="stageId" data-row="' + row.id + '" style="background:' + (stage?stage.color:'transparent') + '; color:' + (stage?'#fff':'inherit') + ';"><option value="">-</option>' +
-          state.stages.map(s=>'<option value="'+s.id+'" '+(row.stageId===s.id?'selected':'')+'>'+s.name+'</option>').join('') +
-          '</select></td>';
-        html += fieldCell(row.id,'designLead',row.designLead,'narrow');
-        html += '<td class="field-cell narrow"><input type="date" data-field="qaqcDate" data-row="' + row.id + '" value="' + (row.qaqcDate||'') + '"></td>';
-        html += fieldCell(row.id,'techLead',row.techLead,'narrow');
-        html += fieldCell(row.id,'projectType',row.projectType,'wide');
-        html += fieldCell(row.id,'projectStatus',row.projectStatus,'status-wide');
+    // Project/placeholder rows + PTO + totals.
+    // The add-project row sits outside the designer's rowspan.
+    const rowspan = Math.max(rows.length, 1) + 2;
 
-        wkKeys.forEach(wkKey=>{
-          const wk = state.weeks[wkKey];
-          const flags = (wk && wk.flags[row.id]) || {mon:emptyDayEntry(),tue:emptyDayEntry(),wed:emptyDayEntry(),thu:emptyDayEntry(),fri:emptyDayEntry()};
-          DAY_KEYS.forEach(day=>{
-            const entry = flags[day] || emptyDayEntry();
-            const off = dayOffInfo(member, wkKey, day);
-            const isOffCol = off.isOff && !entry.hours;
-            const offClass = isOffCol ? (off.label==='PTO' ? 'is-pto' : 'is-off') : '';
-            html += '<td class="day-cell ' + offClass + '">' +
-              '<input class="hrs-input" type="number" min="0" max="16" step="0.5" data-flagrow="' + row.id + '" data-week="' + wkKey + '" data-day="' + day + '" data-field="hours" value="' + (entry.hours!==null && entry.hours!==undefined ? entry.hours : '') + '" placeholder="' + (isOffCol?off.label.toLowerCase():'hrs') + '">' +
-              '<input class="note-input" type="text" data-flagrow="' + row.id + '" data-week="' + wkKey + '" data-day="' + day + '" data-field="note" value="' + escapeAttr(entry.note) + '" placeholder="note">' +
-            '</td>';
-          });
-        });
-        html += '</tr>';
-      });
-
-      // PTO row
-      html += '<tr class="pto-row"><td class="field-cell" colspan="9"><span class="totals-label">PTO (check to mark out) - ' + escapeAttr(member.name) + '</span></td>';
-      wkKeys.forEach(wkKey=>{
-        DAY_KEYS.forEach(day=>{
-          const checked = isMemberPTO(member, wkKey, day);
-          html += '<td class="day-cell"><div class="pto-cell"><label>' + DAY_LABELS[day] + '</label>' +
-            '<input type="checkbox" data-pto-member="' + member.id + '" data-pto-week="' + wkKey + '" data-pto-day="' + day + '" ' + (checked?'checked':'') + '></div></td>';
-        });
-      });
-      html += '</tr>';
-
-      // Actual + Capacity rows
-      html += '<tr class="totals-row"><td class="field-cell" colspan="9"><span class="totals-label">Daily total vs capacity - ' + escapeAttr(member.name) + '</span></td>';
-      const actualsByWeekDay = [];
-      wkKeys.forEach(wkKey=>{
-        DAY_KEYS.forEach(day=>{
-          let daySum = 0;
-          rows.forEach(row=>{
-            const wk = state.weeks[wkKey];
-            const flags = (wk && wk.flags[row.id]) || {};
-            const entry = flags[day];
-            if(entry && entry.hours) daySum += Number(entry.hours);
-          });
-          const cap = dailyCapacity(member, day, wkKey);
-          actualsByWeekDay.push({wkKey, day, daySum, cap});
-        });
-      });
-      actualsByWeekDay.forEach(a=>{
-        let cls = 'neutral';
-        if(a.cap === 0 && a.daySum === 0) cls = 'neutral';
-        else if(a.daySum === a.cap) cls = 'match';
-        else if(a.daySum < a.cap) cls = 'under';
-        else cls = 'over';
-        html += '<td class="day-cell"><div class="totals-cell"><span class="totals-hrs ' + cls + '">' + a.daySum + '/' + a.cap + '</span>' +
-          (rows.length > 1 ? '<button class="split-btn" data-split-member="' + member.id + '" data-split-week="' + a.wkKey + '" data-split-day="' + a.day + '">split</button>' : '') +
-        '</div></td>';
-      });
-      html += '</tr>';
+    if (!rows.length) {
+      html += `<tr class="${stripe}">
+        ${designerCell(member, rowspan)}
+        <td colspan="${totalColumns - 1}"
+            style="text-align:center;padding:10px;color:var(--ink-soft)">
+          No projects assigned
+        </td>
+      </tr>`;
     }
 
-    html += '<tr class="add-row ' + (rowStripe%2?'alt':'') + '"><td colspan="' + totalCols + '"><button data-add-project="' + member.id + '">+ add project for ' + escapeAttr(member.name) + '</button></td></tr>';
-    rowStripe++;
-  });
+    rows.forEach((row, index) => {
+      const stage = stageById(row.stageId);
 
-  body.innerHTML = html;
-  wireTableEvents();
-}
+      html += `<tr class="${stripe}">`;
+      if (index === 0) html += designerCell(member, rowspan);
 
-function wireTableEvents(){
-  document.querySelectorAll('[data-rm-member]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      if(confirm('Remove this team member and all their project rows? Historical hours remain in storage but will no longer be shown.')){
-        const memberId = btn.dataset.rmMember;
-        mutateState(s=>{
-          s.team = s.team.filter(m=>m.id!==memberId);
-          s.rows = s.rows.filter(r=>r.teamId!==memberId);
-        });
-        renderAll();
-      }
-    });
-  });
+      html += `<td class="field-cell narrow">
+        <div class="proj-num-wrap">
+          <button class="rm-row" type="button" data-action="remove-row"
+            data-row="${escapeHTML(row.id)}" title="Remove this project">x</button>
+          <input type="text" class="mono" maxlength="100"
+            data-row="${escapeHTML(row.id)}" data-field="projectNumber"
+            value="${escapeHTML(row.projectNumber)}" aria-label="Project number">
+        </div>
+      </td>`;
 
-  document.querySelectorAll('[data-rm-row]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const rowId = btn.dataset.rmRow;
-      const row = state.rows.find(r=>r.id===rowId);
-      const label = row ? (row.projectName || row.projectNumber || 'this project') : 'this project';
-      if(confirm('Remove "' + label + '" from this designer? Logged hours for it remain in storage but will no longer be shown.')){
-        mutateState(s=>{ s.rows = s.rows.filter(r=>r.id!==rowId); });
-        renderAll();
-      }
-    });
-  });
+      html += fieldCell(row, 'projectName');
+      html += fieldCell(row, 'client');
 
-  document.querySelectorAll('td.field-cell input[data-field], td.field-cell select[data-field]').forEach(el=>{
-    el.addEventListener('change', ()=>{
-      const rowId = el.dataset.row, field = el.dataset.field, value = el.value;
-      mutateState(s=>{
-        const row = s.rows.find(r=>r.id===rowId);
-        if(row) row[field] = value;
-      });
-      renderTable();
-    });
-  });
+      html += `<td class="field-cell narrow">
+        <select class="stage-select" data-row="${escapeHTML(row.id)}"
+          data-field="stageId" aria-label="Project stage"
+          style="background:${stage ? safeColor(stage.color) : 'transparent'};
+                 color:${stage ? '#fff' : 'inherit'}">
+          <option value="">-</option>
+          ${state.stages.map(item =>
+            `<option value="${escapeHTML(item.id)}"
+              ${row.stageId === item.id ? 'selected' : ''}>
+              ${escapeHTML(item.name)}
+            </option>`
+          ).join('')}
+        </select>
+      </td>`;
 
-  document.querySelectorAll('.hrs-input, .note-input').forEach(el=>{
-    el.addEventListener('change', ()=>{
-      const rowId = el.dataset.flagrow, wkKey = el.dataset.week, day = el.dataset.day, field = el.dataset.field, value = el.value;
-      mutateState(s=>{
-        const entry = ensureRowFlagsOn(s, wkKey, rowId)[day] || emptyDayEntry();
-        if(field === 'hours') entry.hours = (value === '' ? null : Number(value));
-        else entry.note = value;
-        ensureRowFlagsOn(s, wkKey, rowId)[day] = entry;
-      });
-      renderTable();
-    });
-  });
+      html += fieldCell(row, 'designLead', 'narrow');
+      html += fieldCell(row, 'qaqcDate', 'narrow', 'date');
+      html += fieldCell(row, 'techLead', 'narrow');
+      html += fieldCell(row, 'projectType');
+      html += fieldCell(row, 'projectStatus', 'status-wide');
 
-  document.querySelectorAll('[data-pto-member]').forEach(el=>{
-    el.addEventListener('change', ()=>{
-      const teamId = el.dataset.ptoMember, wkKey = el.dataset.ptoWeek, day = el.dataset.ptoDay, checked = el.checked;
-      mutateState(s=>{
-        const pto = ensurePtoOn(s, wkKey, teamId);
-        pto[day] = checked;
-      });
-      renderTable();
-    });
-  });
+      weeks.forEach(week => {
+        DAY_KEYS.forEach(day => {
+          const entry = state.weeks[week]?.flags?.[row.id]?.[day] || {};
+          const off = dayOffInfo(state, member, week, day);
+          const shaded = off.isOff && hoursValue(entry) === 0;
+          const shadeClass = shaded
+            ? (off.label === 'PTO' ? 'is-pto' : 'is-off')
+            : '';
 
-  document.querySelectorAll('.split-btn').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const memberId = btn.dataset.splitMember, wkKey = btn.dataset.splitWeek, day = btn.dataset.splitDay;
-      mutateState(s=>{
-        const member = s.team.find(t=>t.id===memberId);
-        const rows = s.rows.filter(r=>r.teamId===memberId);
-        const cap = dailyCapacity(member, day, wkKey);
-        const share = rows.length ? roundHalf(cap / rows.length) : 0;
-        rows.forEach(row=>{
-          const entry = ensureRowFlagsOn(s, wkKey, row.id)[day] || emptyDayEntry();
-          entry.hours = share;
-          ensureRowFlagsOn(s, wkKey, row.id)[day] = entry;
+          html += `<td class="day-cell ${shadeClass}">
+            <input class="hrs-input" type="number" min="0" max="16" step="0.5"
+              data-entry="hours" data-row="${escapeHTML(row.id)}"
+              data-week="${week}" data-day="${day}"
+              value="${escapeHTML(entry.hours ?? '')}"
+              placeholder="${shaded ? off.label.toLowerCase() : 'hrs'}"
+              aria-label="${DAY_LABELS[day]} hours">
+            <input class="note-input" type="text" maxlength="500"
+              data-entry="note" data-row="${escapeHTML(row.id)}"
+              data-week="${week}" data-day="${day}"
+              value="${escapeHTML(entry.note)}"
+              placeholder="note" aria-label="${DAY_LABELS[day]} note">
+          </td>`;
         });
       });
-      renderTable();
-    });
-  });
 
-  document.querySelectorAll('[data-add-project]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const teamId = btn.dataset.addProject;
-      mutateState(s=>{
-        s.rows.push({ id:uid(), teamId, projectNumber:'', projectName:'', client:'', location:'', stageId:'', designLead:'', qaqcDate:'', techLead:'', projectType:'', projectStatus:'' });
+      html += '</tr>';
+    });
+
+    html += `<tr class="pto-row">
+      <td class="field-cell" colspan="9">
+        <span class="totals-label">
+          PTO (check to mark out) - ${escapeHTML(member.name)}
+        </span>
+      </td>`;
+
+    weeks.forEach(week => {
+      DAY_KEYS.forEach(day => {
+        html += `<td class="day-cell">
+          <div class="pto-cell">
+            <label>${DAY_LABELS[day]}</label>
+            <input type="checkbox" data-pto="${escapeHTML(member.id)}"
+              data-week="${week}" data-day="${day}"
+              ${memberPTO(state, member.id, week, day) ? 'checked' : ''}
+              aria-label="${DAY_LABELS[day]} PTO">
+          </div>
+        </td>`;
       });
-      renderAll();
     });
+    html += '</tr>';
+
+    html += `<tr class="totals-row">
+      <td class="field-cell" colspan="9">
+        <span class="totals-label">
+          Daily total vs capacity - ${escapeHTML(member.name)}
+        </span>
+      </td>`;
+
+    weeks.forEach(week => {
+      DAY_KEYS.forEach(day => {
+        const sum = rows.reduce((total, row) =>
+          total + hoursValue(state.weeks[week]?.flags?.[row.id]?.[day]), 0
+        );
+        const capacity = dailyCapacity(state, member, week, day);
+
+        const status = capacity === 0 && sum === 0 ? 'neutral'
+          : sum === capacity ? 'match'
+          : sum < capacity ? 'under'
+          : 'over';
+
+        html += `<td class="day-cell">
+          <div class="totals-cell">
+            <span class="totals-hrs ${status}">${sum}/${capacity}</span>
+            ${rows.length > 1
+              ? `<button class="split-btn" type="button" data-action="split"
+                  data-member="${escapeHTML(member.id)}"
+                  data-week="${week}" data-day="${day}">split</button>`
+              : ''}
+          </div>
+        </td>`;
+      });
+    });
+    html += '</tr>';
+
+    html += `<tr class="add-row ${stripe}">
+      <td colspan="${totalColumns}">
+        <button type="button" data-action="add-row"
+          data-member="${escapeHTML(member.id)}">
+          + add project for ${escapeHTML(member.name)}
+        </button>
+      </td>
+    </tr>`;
   });
+
+  $('scheduleBody').innerHTML = html;
 }
 
-function renderSettingsPanel(){
-  const memberSettings = document.getElementById('memberListSettings');
-  memberSettings.innerHTML = state.team.map(m=>
-    '<div class="member-settings-row">' +
-      '<div class="line1">' +
-        '<input type="text" value="' + escapeAttr(m.name) + '" data-edit-name="' + m.id + '" placeholder="Name" style="flex:1;">' +
-        '<input type="text" value="' + escapeAttr(m.role||'') + '" placeholder="Role" data-edit-role="' + m.id + '" style="flex:1;">' +
-        '<select data-edit-department="' + m.id + '">' +
-          '<option value="Design" ' + (m.department==='Design'?'selected':'') + '>Design</option>' +
-          '<option value="Technical" ' + (m.department==='Technical'?'selected':'') + '>Technical</option>' +
-        '</select>' +
-      '</div>' +
-      '<div class="line2">' +
-        '<label style="display:flex; align-items:center; gap:4px;"><input type="checkbox" ' + (m.awwEnabled?'checked':'') + ' data-edit-aww-enabled="' + m.id + '"> On AWW schedule</label>' +
-        '<label style="display:flex; align-items:center; gap:4px;">Anchor off-Friday: <input type="date" value="' + (m.awwAnchor || state.anchorOffFriday) + '" data-edit-aww-anchor="' + m.id + '"></label>' +
-      '</div>' +
-    '</div>'
-  ).join('') || '<div style="color:var(--ink-soft); font-size:12px;">No team members yet.</div>';
+function renderSettings() {
+  $('memberListSettings').innerHTML = state.team.map(member =>
+    `<div class="member-settings-row">
+      <div class="line1">
+        <input type="text" maxlength="150" placeholder="Name"
+          data-member="${escapeHTML(member.id)}" data-member-field="name"
+          value="${escapeHTML(member.name)}" aria-label="Team member name">
 
-  memberSettings.querySelectorAll('[data-edit-name]').forEach(inp=>{
-    inp.addEventListener('change', ()=>{ const id=inp.dataset.editName, val=inp.value; mutateState(s=>{ const m=s.team.find(t=>t.id===id); if(m) m.name=val; }); renderAll(); });
-  });
-  memberSettings.querySelectorAll('[data-edit-role]').forEach(inp=>{
-    inp.addEventListener('change', ()=>{ const id=inp.dataset.editRole, val=inp.value; mutateState(s=>{ const m=s.team.find(t=>t.id===id); if(m) m.role=val; }); renderAll(); });
-  });
-  memberSettings.querySelectorAll('[data-edit-department]').forEach(sel=>{
-    sel.addEventListener('change', ()=>{ const id=sel.dataset.editDepartment, val=sel.value; mutateState(s=>{ const m=s.team.find(t=>t.id===id); if(m) m.department=val; }); renderAll(); });
-  });
-  memberSettings.querySelectorAll('[data-edit-aww-enabled]').forEach(inp=>{
-    inp.addEventListener('change', ()=>{ const id=inp.dataset.editAwwEnabled, val=inp.checked; mutateState(s=>{ const m=s.team.find(t=>t.id===id); if(m) m.awwEnabled=val; }); renderAll(); });
-  });
-  memberSettings.querySelectorAll('[data-edit-aww-anchor]').forEach(inp=>{
-    inp.addEventListener('change', ()=>{ const id=inp.dataset.editAwwAnchor, val=inp.value; mutateState(s=>{ const m=s.team.find(t=>t.id===id); if(m) m.awwAnchor=val; }); renderAll(); });
-  });
+        <input type="text" maxlength="150" placeholder="Role"
+          data-member="${escapeHTML(member.id)}" data-member-field="role"
+          value="${escapeHTML(member.role)}" aria-label="Role">
+
+        <select data-member="${escapeHTML(member.id)}"
+          data-member-field="department" aria-label="Department">
+          <option value="Design"
+            ${member.department === 'Design' ? 'selected' : ''}>Design</option>
+          <option value="Technical"
+            ${member.department === 'Technical' ? 'selected' : ''}>Technical</option>
+        </select>
+      </div>
+
+      <div class="line2">
+        <label class="inline-label">
+          <input type="checkbox" data-member="${escapeHTML(member.id)}"
+            data-member-field="awwEnabled"
+            ${member.awwEnabled ? 'checked' : ''}>
+          On AWW schedule
+        </label>
+
+        <label class="inline-label">
+          Anchor off-Friday:
+          <input type="date" data-member="${escapeHTML(member.id)}"
+            data-member-field="awwAnchor"
+            value="${escapeHTML(member.awwAnchor || state.anchorOffFriday)}">
+        </label>
+      </div>
+    </div>`
+  ).join('') || '<div class="phrs-empty">No team members yet.</div>';
 }
 
-function renderWorkloadPanel(){
-  const el = document.getElementById('workloadContent');
-  if(state.team.length === 0){
-    el.innerHTML = '<div class="phrs-empty">No team members yet.</div>';
-    return;
-  }
-  el.innerHTML = state.team.map(m=>{
-    const rows = rowsForMember(m.id);
-    const deptClass = m.department==='Technical' ? 'technical' : 'design';
-    const items = rows.length
-      ? rows.map(r=>{
-          const stage = stageById(r.stageId);
-          const stageChip = stage ? ('<span class="chip" style="background:'+stage.color+'; margin-left:6px;">'+stage.name+'</span>') : '';
-          return '<li>' + escapeAttr(r.projectNumber || '(no #)') + ' — ' + escapeAttr(r.projectName || '(untitled)') + stageChip + '</li>';
-        }).join('')
-      : '<li style="color:var(--ink-soft);">No projects assigned</li>';
-    return '<div class="workload-block">' +
-      '<div class="workload-name">' + escapeAttr(m.name) + '<span class="dept-badge ' + deptClass + '">' + escapeAttr(m.department||'Design') + '</span> ' +
-      '<span class="workload-count">(' + rows.length + ' project' + (rows.length===1?'':'s') + ')</span></div>' +
-      '<ul class="workload-list">' + items + '</ul>' +
-    '</div>';
-  }).join('');
+function renderWorkload() {
+  $('workloadContent').innerHTML = state.team.map(member => {
+    const rows = rowsForMember(member.id);
+    const department = member.department || 'Design';
+    const badge = department === 'Technical' ? 'technical' : 'design';
+
+    const items = rows.map(row => {
+      const stage = stageById(row.stageId);
+
+      return `<li>
+        ${escapeHTML(row.projectNumber || '(no #)')} —
+        ${escapeHTML(row.projectName || '(untitled)')}
+        ${stage
+          ? `<span class="chip"
+              style="background:${safeColor(stage.color)};margin-left:6px">
+              ${escapeHTML(stage.name)}
+            </span>`
+          : ''}
+      </li>`;
+    }).join('') || '<li>No projects assigned</li>';
+
+    return `<div class="workload-block">
+      <div class="workload-name">
+        ${escapeHTML(member.name)}
+        <span class="dept-badge ${badge}">${escapeHTML(department)}</span>
+        <span class="workload-count">
+          (${rows.length} project${rows.length === 1 ? '' : 's'})
+        </span>
+      </div>
+      <ul class="workload-list">${items}</ul>
+    </div>`;
+  }).join('') || '<div class="phrs-empty">No team members yet.</div>';
 }
 
-function computeProjectTotals(){
-  const map = {};
-  state.rows.forEach(row=>{
-    const numKey = (row.projectNumber || '').trim().toLowerCase();
-    const nameKey = (row.projectName || '').trim().toLowerCase();
-    const key = numKey ? ('num:' + numKey) : ('name:' + nameKey || ('row:' + row.id));
-    if(!map[key]){
-      map[key] = {
-        projectNumber: row.projectNumber && row.projectNumber.trim() ? row.projectNumber.trim() : '(no #)',
-        projectName: row.projectName && row.projectName.trim() ? row.projectName.trim() : '(untitled)',
-        client: row.client || '',
-        contributors: new Set(),
-        totalAllTime: 0,
-        totalThisWeek: 0
-      };
+function computeProjectTotals() {
+  const projects = new Map();
+
+  state.rows.forEach(row => {
+    const number = String(row.projectNumber || '').trim();
+    const name = String(row.projectName || '').trim();
+
+    const key = number
+      ? 'num:' + number.toLowerCase()
+      : name
+        ? 'name:' + name.toLowerCase()
+        : 'row:' + row.id;
+
+    if (!projects.has(key)) {
+      projects.set(key, {
+        projectNumber:number || '(no #)',
+        projectName:name || '(untitled)',
+        client:row.client || '',
+        contributors:new Set(),
+        totalThisWeek:0,
+        totalAllTime:0
+      });
     }
-    const entry = map[key];
-    if(!entry.client && row.client) entry.client = row.client;
-    if(entry.projectName === '(untitled)' && row.projectName) entry.projectName = row.projectName;
-    entry.contributors.add(row.teamId);
 
-    Object.keys(state.weeks || {}).forEach(wkKeyIter=>{
-      const wk = state.weeks[wkKeyIter];
-      const flags = wk.flags[row.id];
-      if(!flags) return;
-      DAY_KEYS.forEach(d=>{
-        const h = flags[d] && flags[d].hours ? Number(flags[d].hours) : 0;
-        if(!h) return;
-        entry.totalAllTime += h;
-        if(wkKeyIter === weekKey()) entry.totalThisWeek += h;
+    const project = projects.get(key);
+    project.contributors.add(row.teamId);
+
+    if (!project.client && row.client) project.client = row.client;
+    if (project.projectName === '(untitled)' && name) project.projectName = name;
+
+    Object.entries(state.weeks).forEach(([week, data]) => {
+      DAY_KEYS.forEach(day => {
+        const hours = hoursValue(data.flags?.[row.id]?.[day]);
+        project.totalAllTime += hours;
+        if (week === currentMonday) project.totalThisWeek += hours;
       });
     });
   });
-  return Object.values(map).sort((a,b)=> b.totalAllTime - a.totalAllTime);
+
+  return [...projects.values()].sort((a, b) =>
+    b.totalAllTime - a.totalAllTime
+  );
 }
 
-function renderProjectHoursPanel(){
-  const el = document.getElementById('projectHoursContent');
+function renderProjectHours() {
   const totals = computeProjectTotals();
 
-  if(totals.length === 0){
-    el.innerHTML = '<div class="phrs-empty">No project rows yet. Add projects under each team member and log hours to see totals here.</div>';
+  if (!totals.length) {
+    $('projectHoursContent').innerHTML =
+      '<div class="phrs-empty">No project rows yet.</div>';
     return;
   }
 
-  let grandAllTime = 0, grandThisWeek = 0;
-  let rowsHtml = totals.map(p=>{
-    grandAllTime += p.totalAllTime;
-    grandThisWeek += p.totalThisWeek;
-    const contributorNames = Array.from(p.contributors).map(id=>{
-      const m = memberById(id);
-      return m ? m.name : 'unknown';
-    }).join(', ');
-    return '<tr>' +
-      '<td>' + escapeAttr(p.projectNumber) + '</td>' +
-      '<td>' + escapeAttr(p.projectName) + '</td>' +
-      '<td>' + escapeAttr(p.client) + '</td>' +
-      '<td>' + escapeAttr(contributorNames) + '</td>' +
-      '<td class="num">' + (p.totalThisWeek || 0) + '</td>' +
-      '<td class="num">' + (p.totalAllTime || 0) + '</td>' +
-    '</tr>';
+  let allTime = 0;
+  let thisWeek = 0;
+
+  const rows = totals.map(project => {
+    allTime += project.totalAllTime;
+    thisWeek += project.totalThisWeek;
+
+    const names = [...project.contributors].map(id =>
+      state.team.find(member => member.id === id)?.name || 'unknown'
+    ).join(', ');
+
+    return `<tr>
+      <td>${escapeHTML(project.projectNumber)}</td>
+      <td>${escapeHTML(project.projectName)}</td>
+      <td>${escapeHTML(project.client)}</td>
+      <td>${escapeHTML(names)}</td>
+      <td class="num">${project.totalThisWeek}</td>
+      <td class="num">${project.totalAllTime}</td>
+    </tr>`;
   }).join('');
 
-  rowsHtml += '<tr class="grand-total">' +
-    '<td colspan="4">Studio Total</td>' +
-    '<td class="num">' + grandThisWeek + '</td>' +
-    '<td class="num">' + grandAllTime + '</td>' +
-  '</tr>';
-
-  el.innerHTML = '<table class="phrs"><thead><tr>' +
-    '<th>Project #</th><th>Project Name</th><th>Client</th><th>Contributors</th><th>This Week Hrs</th><th>All-Time Hrs</th>' +
-    '</tr></thead><tbody>' + rowsHtml + '</tbody></table>';
+  $('projectHoursContent').innerHTML = `<table class="phrs">
+    <thead>
+      <tr>
+        <th>Project #</th>
+        <th>Project Name</th>
+        <th>Client</th>
+        <th>Contributors</th>
+        <th>This Week Hrs</th>
+        <th>All-Time Hrs</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rows}
+      <tr class="grand-total">
+        <td colspan="4">Studio Total</td>
+        <td class="num">${thisWeek}</td>
+        <td class="num">${allTime}</td>
+      </tr>
+    </tbody>
+  </table>`;
 }
 
-document.getElementById('prevWeek').addEventListener('click', ()=>{
-  const d = new Date(currentMonday+'T00:00:00'); d.setDate(d.getDate()-7);
-  currentMonday = iso(d); renderAll();
+// ============================================================================
+// SCHEDULE EVENTS — DELEGATED SO RE-RENDERING DOES NOT DUPLICATE LISTENERS
+// ============================================================================
+
+const ROW_FIELDS = new Set([
+  'projectNumber', 'projectName', 'client', 'stageId',
+  'designLead', 'qaqcDate', 'techLead', 'projectType', 'projectStatus'
+]);
+
+$('scheduleBody').addEventListener('change', async event => {
+  const input = event.target;
+  if (!ready || !state || !input.dataset) return;
+
+  const rowId = input.dataset.row;
+  const week = input.dataset.week;
+  const day = input.dataset.day;
+
+  if (input.dataset.entry) {
+    if (!DAY_KEYS.includes(day) || !validDate(week)) return;
+
+    const field = input.dataset.entry;
+    let value = input.value;
+
+    if (field === 'hours') {
+      if (
+        value !== '' &&
+        (
+          !input.checkValidity() ||
+          !Number.isFinite(Number(value)) ||
+          Number(value) < 0 ||
+          Number(value) > 16 ||
+          !Number.isInteger(Number(value) * 2)
+        )
+      ) {
+        alert('Enter hours from 0 to 16 in half-hour increments.');
+        renderAll();
+        return;
+      }
+
+      value = value === '' ? null : Number(value);
+    } else if (field !== 'note') {
+      return;
+    }
+
+    await mutateState(s => {
+      requireRow(s, rowId);
+      ensureDay(s, week, rowId, day)[field] = value;
+    });
+    return;
+  }
+
+  if (input.dataset.pto) {
+    const memberId = input.dataset.pto;
+    const checked = input.checked;
+
+    if (!DAY_KEYS.includes(day) || !validDate(week)) return;
+
+    await mutateState(s => {
+      requireMember(s, memberId);
+      ensurePTO(s, week, memberId)[day] = checked;
+    });
+    return;
+  }
+
+  const field = input.dataset.field;
+  if (!ROW_FIELDS.has(field)) return;
+
+  const value = input.value;
+
+  if (field === 'qaqcDate' && value && !validDate(value)) {
+    alert('Enter a valid QAQC date.');
+    renderAll();
+    return;
+  }
+
+  await mutateState(s => {
+    const row = requireRow(s, rowId);
+
+    if (
+      field === 'stageId' &&
+      value &&
+      !s.stages.some(stage => stage.id === value)
+    ) {
+      throw new Error('This project stage no longer exists.');
+    }
+
+    row[field] = value;
+  });
 });
-document.getElementById('nextWeek').addEventListener('click', ()=>{
-  const d = new Date(currentMonday+'T00:00:00'); d.setDate(d.getDate()+7);
-  currentMonday = iso(d); renderAll();
+
+$('scheduleBody').addEventListener('click', async event => {
+  const button = event.target.closest('button[data-action]');
+  if (!button || !ready || !state) return;
+
+  const action = button.dataset.action;
+  const memberId = button.dataset.member;
+  const rowId = button.dataset.row;
+
+  if (action === 'remove-member') {
+    if (!confirm(
+      'Remove this team member and all their project rows? ' +
+      'Historical entries remain in storage but will no longer appear in totals.'
+    )) return;
+
+    await mutateState(s => {
+      s.team = s.team.filter(member => member.id !== memberId);
+      s.rows = s.rows.filter(row => row.teamId !== memberId);
+    });
+    return;
+  }
+
+  if (action === 'remove-row') {
+    const row = state.rows.find(item => item.id === rowId);
+    const label = row?.projectName || row?.projectNumber || 'this project';
+
+    if (!confirm(
+      `Remove "${label}"? Historical hours remain in storage ` +
+      'but will no longer appear in totals.'
+    )) return;
+
+    await mutateState(s => {
+      s.rows = s.rows.filter(item => item.id !== rowId);
+    });
+    return;
+  }
+
+  if (action === 'add-row') {
+    const newId = uid();
+
+    await mutateState(s => {
+      requireMember(s, memberId);
+
+      s.rows.push({
+        id:newId,
+        teamId:memberId,
+        projectNumber:'',
+        projectName:'',
+        client:'',
+        location:'',
+        stageId:'',
+        designLead:'',
+        qaqcDate:'',
+        techLead:'',
+        projectType:'',
+        projectStatus:''
+      });
+    });
+    return;
+  }
+
+  if (action === 'split') {
+    const week = button.dataset.week;
+    const day = button.dataset.day;
+
+    if (!validDate(week) || !DAY_KEYS.includes(day)) return;
+
+    await mutateState(s => {
+      const member = requireMember(s, memberId);
+      const rows = rowsForMember(memberId, s);
+      if (!rows.length) return;
+
+      // Distribute half-hour units while preserving the exact daily total.
+      const units = Math.round(dailyCapacity(s, member, week, day) * 2);
+      const base = Math.floor(units / rows.length);
+      const remainder = units % rows.length;
+
+      rows.forEach((row, index) => {
+        ensureDay(s, week, row.id, day).hours =
+          (base + (index < remainder ? 1 : 0)) / 2;
+      });
+    });
+  }
 });
-document.getElementById('weekPicker').addEventListener('change', (e)=>{
-  currentMonday = iso(mondayOf(e.target.value)); renderAll();
+
+$('memberListSettings').addEventListener('change', async event => {
+  const input = event.target;
+  if (!ready || !state) return;
+
+  const memberId = input.dataset.member;
+  const field = input.dataset.memberField;
+
+  if (!['name', 'role', 'department', 'awwEnabled', 'awwAnchor'].includes(field)) {
+    return;
+  }
+
+  let value = field === 'awwEnabled' ? input.checked : input.value;
+
+  if (field === 'name') {
+    value = value.trim();
+    if (!value) {
+      alert('A team member needs a name.');
+      renderAll();
+      return;
+    }
+  }
+
+  if (field === 'department' && !['Design', 'Technical'].includes(value)) return;
+
+  if (field === 'awwAnchor') {
+    if (!validDate(value) || parseDate(value).getDay() !== 5) {
+      alert('Choose a Friday as the AWW anchor date.');
+      renderAll();
+      return;
+    }
+  }
+
+  await mutateState(s => {
+    requireMember(s, memberId)[field] = value;
+  });
 });
-document.getElementById('deptFilter').addEventListener('change', (e)=>{
-  deptFilter = e.target.value; renderAll();
+
+app.addEventListener('focusout', () => {
+  setTimeout(() => {
+    if (ready && state && renderDeferred && !isEditingNow()) renderAll();
+  }, 0);
 });
-document.getElementById('oneWeekBtn').addEventListener('click', ()=>{ weeksToShow = 1; renderAll(); });
-document.getElementById('twoWeekBtn').addEventListener('click', ()=>{ weeksToShow = 2; renderAll(); });
-document.getElementById('studioName').addEventListener('change', (e)=>{
-  const val = e.target.value;
-  mutateState(s=>{ s.studioName = val; });
+
+// ============================================================================
+// TOOLBAR AND AUTHENTICATION EVENTS
+// ============================================================================
+
+$('signInBtn').addEventListener('click', signIn);
+$('signOutBtn').addEventListener('click', signOut);
+
+$('retryBtn').addEventListener('click', () => {
+  if (auth?.currentUser) void handleAuthStateChanged(auth.currentUser);
 });
-document.getElementById('settingsBtn').addEventListener('click', ()=>{
-  document.getElementById('settingsPanel').classList.toggle('open');
-});
-document.getElementById('workloadBtn').addEventListener('click', ()=>{
-  document.getElementById('workloadPanel').classList.toggle('open');
-  renderWorkloadPanel();
-});
-document.getElementById('projectHoursBtn').addEventListener('click', ()=>{
-  document.getElementById('projectHoursPanel').classList.toggle('open');
-  renderProjectHoursPanel();
-});
-document.getElementById('printBtn').addEventListener('click', ()=> window.print());
-document.getElementById('refreshBtn').addEventListener('click', ()=> pullLatest());
-document.getElementById('addMemberBtn').addEventListener('click', ()=>{
-  const name = prompt('Team member name:');
-  if(!name) return;
-  const role = prompt('Role (optional):') || '';
-  const dept = (prompt('Department — type Design or Technical:', 'Design') || 'Design').trim();
-  const department = /^tech/i.test(dept) ? 'Technical' : 'Design';
-  mutateState(s=>{ s.team.push({id:uid(), name, role, department, awwEnabled:false, awwAnchor: s.anchorOffFriday}); });
+
+$('prevWeek').addEventListener('click', () => {
+  if (!ready) return;
+  currentMonday = addDaysISO(currentMonday, -7);
   renderAll();
 });
 
-setInterval(()=>{ if(!isEditingNow()) pullLatest(); }, POLL_MS);
-
-(async function init(){
-  await load();
+$('nextWeek').addEventListener('click', () => {
+  if (!ready) return;
+  currentMonday = addDaysISO(currentMonday, 7);
   renderAll();
-})();
+});
+
+$('weekPicker').addEventListener('change', event => {
+  if (!ready) return;
+
+  if (validDate(event.target.value)) {
+    currentMonday = mondayOf(event.target.value);
+  }
+
+  renderAll();
+});
+
+$('deptFilter').addEventListener('change', event => {
+  if (!ready) return;
+  deptFilter = event.target.value;
+  renderAll();
+});
+
+$('oneWeekBtn').addEventListener('click', () => {
+  weeksToShow = 1;
+  renderAll();
+});
+
+$('twoWeekBtn').addEventListener('click', () => {
+  weeksToShow = 2;
+  renderAll();
+});
+
+$('studioName').addEventListener('change', async event => {
+  const value = event.target.value.trim();
+
+  if (!value) {
+    alert('Enter a studio name.');
+    renderAll();
+    return;
+  }
+
+  await mutateState(s => {
+    s.studioName = value;
+  });
+});
+
+[
+  ['settingsBtn', 'settingsPanel'],
+  ['workloadBtn', 'workloadPanel'],
+  ['projectHoursBtn', 'projectHoursPanel']
+].forEach(([button, panel]) => {
+  $(button).addEventListener('click', () => {
+    if (ready) $(panel).classList.toggle('open');
+  });
+});
+
+$('printBtn').addEventListener('click', () => {
+  if (ready) window.print();
+});
+
+$('refreshBtn').addEventListener('click', () => {
+  void refreshSchedule();
+});
+
+$('addMemberBtn').addEventListener('click', async () => {
+  if (!ready) return;
+
+  const name = prompt('Team member name:')?.trim();
+  if (!name) return;
+
+  const role = prompt('Role (optional):')?.trim() || '';
+  const answer = prompt('Department — Design or Technical:', 'Design');
+  if (answer === null) return;
+
+  const department = /^tech/i.test(answer.trim()) ? 'Technical' : 'Design';
+  const newId = uid();
+
+  await mutateState(s => {
+    s.team.push({
+      id:newId,
+      name:name.slice(0, 150),
+      role:role.slice(0, 150),
+      department,
+      awwEnabled:false,
+      awwAnchor:s.anchorOffFriday || '2026-01-02'
+    });
+  });
+});
+
+window.addEventListener('beforeunload', event => {
+  if (pendingWrites > 0) {
+    event.preventDefault();
+    event.returnValue = '';
+  }
+});
+
+// No unauthenticated database listeners, polling, migration, or cache loading.
+void initializeAuthentication();
 </script>
-
-
-</body></html>
+</body>
+</html>
